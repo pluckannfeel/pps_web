@@ -19,23 +19,16 @@ import { sectionTitleStyleProp } from './CssHelpers';
 
 import { monthOptions, dayOptions, yearsOptions } from './DateHelper';
 
-interface formValues {
-    email: string;
-    password: string;
-    firstName: string;
-    lastName: string;
-    day: string;
-    month: string;
-    year: string;
-    confirm: string;
-    termsOfService: boolean;
-}
+// user props
+import { formValues } from './UserProps';
 
 type userRegisterFormProps = {
     onRegisterUser: (values: formValues) => void;
-}
+};
 
-const UserRegisterForm: React.FunctionComponent<userRegisterFormProps> = (props)  => {
+const UserRegisterForm: React.FunctionComponent<userRegisterFormProps> = (
+    props
+) => {
     // terms of service and privacy policy
     const [isTPChecked, setIsTPChecked] = useState(true);
 
@@ -207,7 +200,7 @@ const UserRegisterForm: React.FunctionComponent<userRegisterFormProps> = (props)
                     />
 
                     {!isTPChecked ? (
-                        <Text variant="text" size='sm' color="red">
+                        <Text variant="text" size="sm" color="red">
                             You must accept the terms of service and privacy
                             policy.
                         </Text>
