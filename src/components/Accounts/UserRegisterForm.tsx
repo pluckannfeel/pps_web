@@ -91,11 +91,11 @@ const UserRegisterForm: React.FunctionComponent<userRegisterFormProps> = (
 
     const formSubmitHandler = (values: formValues) => {
         setIsTPChecked(values.termsOfService);
-        console.log(values);
-        // if (values.termsOfService) {
-        //     // console.log(values)
-        //     props.onRegisterUser(values);
-        // }
+        // console.log(values);
+        if (values.termsOfService) {
+            // console.log(values)
+            props.onRegisterUser(values);
+        }
     };
 
     const textInput: CSSObject = {

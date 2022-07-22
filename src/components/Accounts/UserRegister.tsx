@@ -22,7 +22,12 @@ import { formValues } from './UserProps';
 // custom hook http request
 import useHttpRequest from '../hooks/use-httprequest';
 
+// React Router
+import { useNavigate } from 'react-router-dom';
+
 const UserRegister = () => {
+    const navigate = useNavigate();
+
     const { classes } = useStyles();
     const {
         loading,
@@ -36,7 +41,7 @@ const UserRegister = () => {
                 url: 'http://localhost:8000/users/register',
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json'
                 },
                 body: {
                     first_name: values.firstName,
@@ -50,6 +55,8 @@ const UserRegister = () => {
             },
             (data) => {
                 console.log(data);
+
+                navigate('/', { replace: true, state: { success: data } });
             }
         );
 

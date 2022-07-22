@@ -83,7 +83,7 @@ const PasswordInputWithStrength: React.FunctionComponent<
                     required
                     label="Your password"
                     placeholder="Your password"
-                    description="Strong password should include letters in lower and uppercase, at least 1 number, at least 1 special symbol"
+                    description="Strong password should include letters in lower and uppercase, at least 1 number, and at least 8 characters long."
                     value={value}
                     onChange={(event) => {
                         setValue(event.target.value);
@@ -98,10 +98,6 @@ const PasswordInputWithStrength: React.FunctionComponent<
                 value={strength}
                 size={5}
                 style={{ marginBottom: 10 }}
-            />
-            <PasswordRequirement
-                label="Includes at least 6 characters"
-                meets={value.length > 5}
             />
             {checks}
         </Popover>
