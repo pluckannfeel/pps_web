@@ -37,16 +37,12 @@ const UserRegister = () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    // 'Access-Control-Allow-Origin': 'http://127.0.0.1:3000',
-                    // 'Access-Control-Allow-Methods':
-                    //     'GET,PUT,POST,DELETE,PATCH,OPTIONS',
-                    // 'Access-Control-Allow-Headers':
-                    //     'Content-Type, Authorization'
                 },
                 body: {
                     first_name: values.firstName,
                     last_name: values.lastName,
                     username: values.email,
+                    birth_date: `${values.year}-${values.month}-${values.day}`,
                     email: values.email,
                     password_hash: values.password,
                     confirm_password: values.password

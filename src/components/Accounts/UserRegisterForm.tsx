@@ -10,7 +10,12 @@ import {
     Paper,
     Center,
     Select,
-    InputWrapper
+    InputWrapper,
+    Popover,
+    Progress,
+    PasswordInput,
+    Tooltip,
+    Popper
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 
@@ -21,6 +26,12 @@ import { monthOptions, dayOptions, yearsOptions } from './DateHelper';
 
 // user props
 import { formValues } from './UserProps';
+import PasswordInputWithStrength, {
+    PasswordRequirement,
+    passwordValidations,
+    getStrength
+} from '../ui/PasswordInputRequirements';
+import { EyeCheck, EyeOff } from 'tabler-icons-react';
 
 type userRegisterFormProps = {
     onRegisterUser: (values: formValues) => void;
@@ -31,6 +42,7 @@ const UserRegisterForm: React.FunctionComponent<userRegisterFormProps> = (
 ) => {
     // terms of service and privacy policy
     const [isTPChecked, setIsTPChecked] = useState(true);
+    const [passwordHelper, setPasswordHelper] = useState(null);
 
     const form = useForm({
         initialValues: {
@@ -79,16 +91,19 @@ const UserRegisterForm: React.FunctionComponent<userRegisterFormProps> = (
 
     const formSubmitHandler = (values: formValues) => {
         setIsTPChecked(values.termsOfService);
-
-        if (values.termsOfService) {
-            // console.log(values)
-            props.onRegisterUser(values);
-        }
+        console.log(values);
+        // if (values.termsOfService) {
+        //     // console.log(values)
+        //     props.onRegisterUser(values);
+        // }
     };
 
     const textInput: CSSObject = {
         lineHeight: '2rem'
     };
+
+    // for password input props
+    const {onChange: otherOnChange, ...passwordInputProps} = form.getInputProps('password');
 
     return (
         <Center>
@@ -164,13 +179,35 @@ const UserRegisterForm: React.FunctionComponent<userRegisterFormProps> = (
                 </Paper>
 
                 <Paper p="md">
-                    <TextInput
+                    {/* <TextInput
                         required
                         label="Password"
                         type="password"
                         sx={textInput}
                         {...form.getInputProps('password')}
+                    /> */}
+                    <PasswordInputWithStrength 
+                        formInputProps={{
+                            otherHandler: passwordInputProps,
+                            onChange: otherOnChange
+                        }}
+                        
                     />
+
+                    {/* <PasswordInput
+                        required
+                        sx={textInput}
+                        label="Your password"
+                        placeholder="Your password"
+                        description="Strong password should include letters in lower and uppercase, at least 1 number, and at least 8 characters long."
+                        visibilityToggleIcon={({ reveal, size }) =>
+                            reveal ? (
+                                <EyeOff size={size} />
+                            ) : (
+                                <EyeCheck size={size} />
+                            )
+                        }
+                        {...form.getInputProps('password')} */}
                 </Paper>
 
                 <Paper p="md">
