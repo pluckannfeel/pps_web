@@ -25,16 +25,11 @@ import { sectionTitleStyleProp } from './CssHelpers';
 import { monthOptions, dayOptions, yearsOptions } from './DateHelper';
 
 // user props
-import { formValues } from './UserProps';
-import PasswordInputWithStrength, {
-    PasswordRequirement,
-    passwordValidations,
-    getStrength
-} from '../ui/PasswordInputRequirements';
-import { EyeCheck, EyeOff } from 'tabler-icons-react';
+import { registerFormProps } from './UserProps';
+import PasswordInputWithStrength from '../ui/PasswordInputRequirements';
 
 type userRegisterFormProps = {
-    onRegisterUser: (values: formValues) => void;
+    onRegisterUser: (values: registerFormProps) => void;
 };
 
 const UserRegisterForm: React.FunctionComponent<userRegisterFormProps> = (
@@ -89,7 +84,7 @@ const UserRegisterForm: React.FunctionComponent<userRegisterFormProps> = (
         // }
     });
 
-    const formSubmitHandler = (values: formValues) => {
+    const formSubmitHandler = (values: registerFormProps) => {
         setIsTPChecked(values.termsOfService);
         // console.log(values);
         if (values.termsOfService) {
@@ -103,7 +98,8 @@ const UserRegisterForm: React.FunctionComponent<userRegisterFormProps> = (
     };
 
     // for password input props
-    const {onChange: otherOnChange, ...passwordInputProps} = form.getInputProps('password');
+    const { onChange: otherOnChange, ...passwordInputProps } =
+        form.getInputProps('password');
 
     return (
         <Center>
@@ -186,12 +182,11 @@ const UserRegisterForm: React.FunctionComponent<userRegisterFormProps> = (
                         sx={textInput}
                         {...form.getInputProps('password')}
                     /> */}
-                    <PasswordInputWithStrength 
+                    <PasswordInputWithStrength
                         formInputProps={{
                             otherHandler: passwordInputProps,
                             onChange: otherOnChange
                         }}
-                        
                     />
 
                     {/* <PasswordInput

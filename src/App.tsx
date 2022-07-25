@@ -9,11 +9,15 @@ import {
 import { useHotkeys, useLocalStorage } from '@mantine/hooks';
 
 // react router
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 import UserLogin from './components/Accounts/UserLogin';
 import UserRegister from './components/Accounts/UserRegister';
 import Main from './components/Dashboard/Main';
+
+// Auth context
+import { UserAuthContextProvider } from './components/store/auth-context';
+import { NotificationsProvider } from '@mantine/notifications';
 
 const App: React.FC = () => {
     const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
@@ -48,13 +52,24 @@ const App: React.FC = () => {
                     primaryColor: 'orange'
                 }}
             >
-                <BrowserRouter>
-                    <Routes>
-                        <Route path="/" element={<UserLogin />} />
-                        <Route path='/register' element={<UserRegister/>}/>
-                        <Route path='/dashboard' element={<Main/>}/>
-                    </Routes>
-                </BrowserRouter>
+                <NotificationsProvider>
+                    <UserAuthContextProvider>
+                        <BrowserRouter>
+                            <Routes>
+                                <Route path="/" element={<UserLogin />} />
+                                <Route
+                                    path="/register"
+                                    element={<UserRegister />}
+                                />
+                                <Route path="/dashboard" element={<Main />} />
+                                <Route
+                                    path="*"
+                                    element={<Navigate to="/" replace />}
+                                />
+                            </Routes>
+                        </BrowserRouter>
+                    </UserAuthContextProvider>
+                </NotificationsProvider>
             </MantineProvider>
         </ColorSchemeProvider>
     );

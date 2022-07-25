@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
     ActionIcon,
     CloseButton,
@@ -17,7 +17,7 @@ import UserRegisterForm from './UserRegisterForm';
 import CustomLoadOverlay from '../ui/LoadOverlay';
 
 // user props
-import { formValues } from './UserProps';
+import { registerFormProps } from './UserProps';
 
 // custom hook http request
 import useHttpRequest from '../hooks/use-httprequest';
@@ -25,7 +25,15 @@ import useHttpRequest from '../hooks/use-httprequest';
 // React Router
 import { useNavigate } from 'react-router-dom';
 
+// user auth
+import { UserAuthContextProps } from '../store/auth-props';
+import UserAuthContext from '../store/auth-context';
+import { showNotification } from '@mantine/notifications';
+import { CheckIcon } from '@radix-ui/react-icons';
+
 const UserRegister = () => {
+    const authCtx = useContext(UserAuthContext) as UserAuthContextProps;
+
     const navigate = useNavigate();
 
     const { classes } = useStyles();
@@ -35,7 +43,7 @@ const UserRegister = () => {
         sendRequest: sendUserRegistration
     } = useHttpRequest();
 
-    const handleUserRegister = (values: formValues) => {
+    const handleUserRegister = (values: registerFormProps) => {
         sendUserRegistration(
             {
                 url: 'http://localhost:8000/users/register',
@@ -54,9 +62,22 @@ const UserRegister = () => {
                 }
             },
             (data) => {
-                console.log(data);
+                // console.log(data);
 
                 navigate('/', { replace: true, state: { success: data } });
+
+                // authCtx.setNewAccount();
+
+                showNotification({
+                    id: 'account-created',
+                    title: 'Successfully Registered.',
+                    message: 'Your account has been created.',
+                    color: 'green',
+                    autoClose: 5000,
+                    icon: <CheckIcon />
+                });
+
+                
             }
         );
 

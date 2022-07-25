@@ -1,4 +1,4 @@
-export interface formValues {
+export interface registerFormProps {
     email: string;
     password: string;
     firstName: string;
@@ -8,4 +8,9 @@ export interface formValues {
     year: string;
     confirm: string;
     termsOfService: boolean;
+}
+
+export interface logInFormValues {
+    email: string;
+    password: string;
 }
