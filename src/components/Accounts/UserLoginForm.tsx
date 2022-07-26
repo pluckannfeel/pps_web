@@ -1,4 +1,5 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
+import useHttpRequest from '../hooks/use-httprequest';
 import {
     TextInput,
     // Checkbox,
@@ -10,7 +11,8 @@ import {
     Paper,
     Center,
     Notification,
-    Stack
+    Stack,
+    Alert
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 
@@ -19,21 +21,29 @@ import { sectionTitleStyleProp } from './CssHelpers';
 
 // react router
 import { Link } from 'react-router-dom';
-import { Check } from 'tabler-icons-react';
+import { Check, AlertCircle } from 'tabler-icons-react';
 import { CheckIcon } from '@radix-ui/react-icons';
 import { showNotification } from '@mantine/notifications';
 
-import { logInFormValues } from './UserProps'
+import { logInFormValues } from './UserProps';
+
+// auth context
+import UserAuthContext from '../store/auth-context';
+import { UserAuthContextProps } from '../store/auth-props';
 
 type userRegisterFormProps = {
-    onLogin: (values: logInFormValues) => void;
+    // onLogin: (values: logInFormValues) => void;
 };
 
-const UserLoginForm: React.FunctionComponent<userRegisterFormProps> = (props) => {
+const UserLoginForm: React.FunctionComponent<userRegisterFormProps> = (
+    props
+) => {
+    const authCtx = useContext(UserAuthContext) as UserAuthContextProps;
+
     const form = useForm({
         initialValues: {
             email: '',
-            password: '',
+            password: ''
             // termsOfService: false
         },
 
@@ -48,8 +58,48 @@ const UserLoginForm: React.FunctionComponent<userRegisterFormProps> = (props) =>
         }
     });
 
+    const { loading, error, sendRequest: loginRequest } = useHttpRequest();
+    const [responseError, setResponseError] = useState<string | undefined>('');
+
     const formSubmitHandler = (values: logInFormValues) => {
-        props.onLogin(values);
+        // console.log(values);
+        loginRequest(
+            {
+                url: 'http://localhost:8000/users/login',
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    username: values.email,
+                    password: values.password
+                }
+            },
+            (data: { token?: string; detail?: string }) => {
+                // error occured
+                const hasError = !!data.detail;
+                if (hasError) {
+                    console.log(data.detail);
+                    setResponseError(data.detail);
+                    return;
+                }
+                const token = data.token!;
+
+                const today = new Date();
+                const tomorrow = new Date(today);
+                tomorrow.setDate(tomorrow.getDate() + 1)
+
+                const expiration = tomorrow.getTime()
+                console.log(expiration)
+
+                authCtx.login(token, expiration);
+
+                // console.log(data.token);
+                form.reset();
+
+                setResponseError('');
+            }
+        );
     };
 
     const textInput: CSSObject = {
@@ -59,6 +109,16 @@ const UserLoginForm: React.FunctionComponent<userRegisterFormProps> = (props) =>
     return (
         <Center>
             <Stack>
+                {!loading && responseError && (
+                    <Alert
+                        icon={<AlertCircle size={16} />}
+                        title="Please try again."
+                        color="orange"
+                        variant="filled"
+                    >
+                        <Text>{responseError}</Text>
+                    </Alert>
+                )}
                 <form
                     className={classes.signin_form}
                     onSubmit={form.onSubmit(formSubmitHandler)}
@@ -116,6 +176,8 @@ const UserLoginForm: React.FunctionComponent<userRegisterFormProps> = (props) =>
                                 variant="gradient"
                                 gradient={{ from: 'orange', to: 'red' }}
                                 type="submit"
+                                loaderPosition="right"
+                                loading={loading}
                             >
                                 Sign In
                             </Button>

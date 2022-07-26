@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { UserAuthContextProps } from '../store/auth-props';
+import { UserAuthContextProps, StoredTokenProps } from '../store/auth-props';
 
 let logoutTimer: any;
 
@@ -7,7 +7,7 @@ const UserAuthContext = React.createContext<UserAuthContextProps | null>({
     token: '',
     isAuthenticated: false,
     login: (token: string, duration: number) => {},
-    logout: () => {},
+    logout: () => {}
     // newAccount: false,
     // setNewAccount: () => {}
 });
@@ -44,7 +44,9 @@ interface FCProps {
     children: React.ReactNode;
 }
 
-export const UserAuthContextProvider: React.FunctionComponent<FCProps> = ({ children }) => {
+export const UserAuthContextProvider: React.FunctionComponent<FCProps> = ({
+    children
+}) => {
     // this will display notification to the user which just registered
     // const [hasNewAccount, setHasNewAccount] = useState<boolean>(false);
 
@@ -70,22 +72,20 @@ export const UserAuthContextProvider: React.FunctionComponent<FCProps> = ({ chil
     const logoutHandler = useCallback(() => {
         setToken('');
         localStorage.removeItem('token');
-        localStorage.removeItem('tokenExpTime');
-
+        localStorage.removeItem('tokenExpiration');
+        console.log('i was logged out');
         if (logoutTimer) clearTimeout(logoutTimer);
     }, [setToken]);
 
     const loginHandler = useCallback(
         (token: string, duration: number) => {
+            // console.log(token);
+            // console.log(duration);
             setToken(token);
             localStorage.setItem('token', token);
-            localStorage.setItem(
-                'tokenExpTime',
-                new Date(Date.now() + duration * 1000).toISOString()
-            );
+            localStorage.setItem('tokenExpiration', duration.toString());
 
             const remainingTime = calculateRemainingTime(duration);
-
             logoutTimer = setTimeout(logoutHandler, remainingTime);
         },
         [setToken, logoutHandler]
@@ -102,13 +102,15 @@ export const UserAuthContextProvider: React.FunctionComponent<FCProps> = ({ chil
         token: token,
         isAuthenticated,
         login: loginHandler,
-        logout: logoutHandler,
+        logout: logoutHandler
         // newAccount: hasNewAccount,
         // setNewAccount: newAccountHandler
     };
 
     return (
-        <UserAuthContext.Provider value={context}>{children}</UserAuthContext.Provider>
+        <UserAuthContext.Provider value={context}>
+            {children}
+        </UserAuthContext.Provider>
     );
 };
 

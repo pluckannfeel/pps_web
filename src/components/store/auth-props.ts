@@ -6,3 +6,8 @@ export interface UserAuthContextProps {
     // newAccount: boolean;
     // setNewAccount: () => void;
 }
+
+export interface StoredTokenProps {
+    token: string;
+    duration: Date
+}

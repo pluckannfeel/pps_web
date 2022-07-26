@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import {
     ActionIcon,
     useMantineColorScheme,
@@ -19,19 +19,13 @@ import UserLoginForm from './UserLoginForm';
 // auth context
 // import UserAuthContext from '../store/auth-context';
 // import { UserAuthContextProps } from '../store/auth-props';
-import { logInFormValues } from './UserProps';
 
 const UserLogin: React.FunctionComponent = () => {
     const { classes } = useStyles();
     const { colorScheme, toggleColorScheme } = useMantineColorScheme();
     const dark = colorScheme === 'dark';
 
-    // const location = useLocation();
-    // const authContext = useContext(UserAuthContext) as UserAuthContextProps;
-
-    const loginHandler = (values: logInFormValues) => {
-        console.log(values);
-    };
+    
 
     return (
         <div className={classes.wrapper}>
@@ -70,8 +64,7 @@ const UserLogin: React.FunctionComponent = () => {
                     sx={{ minHeight: '93vh' }}
                 >
                     <UserLoginHeadline />
-
-                    <UserLoginForm onLogin={loginHandler} />
+                    <UserLoginForm/>
                 </SimpleGrid>
             </div>
         </div>

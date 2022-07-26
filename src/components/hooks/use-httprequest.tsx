@@ -10,12 +10,16 @@ interface requestConfigProps {
     body: {};
 }
 
+
 const useHttpRequest = () => {
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<string | null>(null);
 
     const sendRequest = useCallback(
-        async (requestConfig: requestConfigProps, applyData: (data: {}) => void) => {
+        async (
+            requestConfig: requestConfigProps,
+            applyData: (data: {}) => void
+        ) => {
             setLoading(true);
             setError(null);
 
@@ -27,15 +31,17 @@ const useHttpRequest = () => {
                         ? JSON.stringify(requestConfig.body)
                         : null
                 });
-
-                if (!response.ok) {
-                    throw new Error(response.statusText);
-                }
+                // console.log(response)
+                // if (!response.ok) {
+                //     throw new Error(response.statusText);
+                // }
 
                 const data = await response.json();
                 applyData(data);
-            } catch (err: any) {
-                setError(err);
+            } catch (error: unknown) {
+                if (error instanceof Error) {
+                    setError(error.message);
+                }
             }
             setLoading(false);
         },
@@ -46,7 +52,7 @@ const useHttpRequest = () => {
         loading,
         error,
         sendRequest
-    }
+    };
 };
 
 export default useHttpRequest;
