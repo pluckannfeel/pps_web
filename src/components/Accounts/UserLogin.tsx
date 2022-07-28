@@ -25,8 +25,6 @@ const UserLogin: React.FunctionComponent = () => {
     const { colorScheme, toggleColorScheme } = useMantineColorScheme();
     const dark = colorScheme === 'dark';
 
-    
-
     return (
         <div className={classes.wrapper}>
             <div className={classes.child}>
@@ -64,7 +62,7 @@ const UserLogin: React.FunctionComponent = () => {
                     sx={{ minHeight: '93vh' }}
                 >
                     <UserLoginHeadline />
-                    <UserLoginForm/>
+                    <UserLoginForm />
                 </SimpleGrid>
             </div>
         </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 
 import {
     MantineProvider,
@@ -7,19 +7,14 @@ import {
 } from '@mantine/core';
 
 import { useHotkeys, useLocalStorage } from '@mantine/hooks';
-
-// react router
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-
-import UserLogin from './components/Accounts/UserLogin';
-import UserRegister from './components/Accounts/UserRegister';
-import Main from './components/Dashboard/Main';
-
-// Auth context
-import { UserAuthContextProvider } from './components/store/auth-context';
 import { NotificationsProvider } from '@mantine/notifications';
 
+import { UserAuthContextProvider } from './components/store/auth-context';
+
+import Main from './components/Main';
+
 const App: React.FC = () => {
+
     const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
         key: 'mantine-color-scheme',
         defaultValue: 'light',
@@ -54,20 +49,7 @@ const App: React.FC = () => {
             >
                 <NotificationsProvider>
                     <UserAuthContextProvider>
-                        <BrowserRouter>
-                            <Routes>
-                                <Route path="/" element={<UserLogin />} />
-                                <Route
-                                    path="/register"
-                                    element={<UserRegister />}
-                                />
-                                <Route path="/dashboard" element={<Main />} />
-                                <Route
-                                    path="*"
-                                    element={<Navigate to="/" replace />}
-                                />
-                            </Routes>
-                        </BrowserRouter>
+                        <Main/>
                     </UserAuthContextProvider>
                 </NotificationsProvider>
             </MantineProvider>

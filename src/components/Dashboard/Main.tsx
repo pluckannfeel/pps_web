@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     AppShell,
     Navbar,
@@ -11,11 +11,18 @@ import {
     useMantineTheme
 } from '@mantine/core';
 import MainNavbar from './MainNavbar';
+
+import { useNavigate } from 'react-router-dom';
 // import MainHeader from './MainHeader';
 
-const Main: React.FC = () => {
+const Workspace: React.FC = () => {
     const theme = useMantineTheme();
     const [opened, setOpened] = useState(false);
+    let navigate = useNavigate();
+
+    useEffect(() => {
+        navigate('/dashboard');
+    }, [navigate]);
 
     return (
         <AppShell
@@ -79,4 +86,4 @@ const Main: React.FC = () => {
     );
 };
 
-export default Main;
+export default Workspace;

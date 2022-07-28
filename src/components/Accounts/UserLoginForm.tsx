@@ -31,6 +31,8 @@ import { logInFormValues } from './UserProps';
 import UserAuthContext from '../store/auth-context';
 import { UserAuthContextProps } from '../store/auth-props';
 
+import { useNavigate } from 'react-router-dom';
+
 type userRegisterFormProps = {
     // onLogin: (values: logInFormValues) => void;
 };
@@ -61,6 +63,8 @@ const UserLoginForm: React.FunctionComponent<userRegisterFormProps> = (
     const { loading, error, sendRequest: loginRequest } = useHttpRequest();
     const [responseError, setResponseError] = useState<string | undefined>('');
 
+    const navigate = useNavigate();
+
     const formSubmitHandler = (values: logInFormValues) => {
         // console.log(values);
         loginRequest(
@@ -87,13 +91,16 @@ const UserLoginForm: React.FunctionComponent<userRegisterFormProps> = (
 
                 const today = new Date();
                 const tomorrow = new Date(today);
-                tomorrow.setDate(tomorrow.getDate() + 1)
+                tomorrow.setDate(tomorrow.getDate() + 1);
 
-                const expiration = tomorrow.getTime()
-                console.log(expiration)
+                const expiration = tomorrow.getTime();
+                // console.log(expiration);
 
                 authCtx.login(token, expiration);
-
+                navigate('/dashboard', {
+                    replace: true,
+                    state: { success: data }
+                });
                 // console.log(data.token);
                 form.reset();
 

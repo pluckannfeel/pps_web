@@ -3,7 +3,7 @@ import { UserAuthContextProps, StoredTokenProps } from '../store/auth-props';
 
 let logoutTimer: any;
 
-const UserAuthContext = React.createContext<UserAuthContextProps | null>({
+const UserAuthContext = React.createContext<UserAuthContextProps>({
     token: '',
     isAuthenticated: false,
     login: (token: string, duration: number) => {},
@@ -13,23 +13,21 @@ const UserAuthContext = React.createContext<UserAuthContextProps | null>({
 });
 
 const calculateRemainingTime = (expirationTime: number): number => {
+    const currentTime = new Date().getTime();
     const adjustedExpirationTime = new Date(expirationTime).getTime();
-    const remainingTime = adjustedExpirationTime - Date.now();
-    return remainingTime > 0 ? remainingTime : 0;
+    const remainingTime = adjustedExpirationTime - currentTime;
+
+    return remainingTime;
 };
 
 const fetchStoredToken = () => {
     const storedToken = localStorage.getItem('token');
-    const storedExpirationDate = localStorage.getItem('tokenExpTime');
-
+    const storedExpirationDate = localStorage.getItem('tokenExpiration');
     if (storedExpirationDate && storedToken) {
-        const remainingTime = calculateRemainingTime(
-            new Date(storedExpirationDate).getTime()
-        );
-
+        const remainingTime = calculateRemainingTime(+storedExpirationDate);
         if (remainingTime <= 86400) {
             localStorage.removeItem('token');
-            localStorage.removeItem('tokenExpTime');
+            localStorage.removeItem('tokenExpiration');
             return null;
         }
 
@@ -47,40 +45,23 @@ interface FCProps {
 export const UserAuthContextProvider: React.FunctionComponent<FCProps> = ({
     children
 }) => {
-    // this will display notification to the user which just registered
-    // const [hasNewAccount, setHasNewAccount] = useState<boolean>(false);
+    const fetchedToken = fetchStoredToken();
 
-    // if this is called means that new account is created, will then display a notification message in the UI
-    // const newAccountHandler = useCallback(() => {
-    //     setHasNewAccount(true);
-
-    //     setTimeout(function () {
-    //         if (hasNewAccount) {
-    //             setHasNewAccount(false);
-    //         }
-    //     }, 5000);
-    // }, [setHasNewAccount, hasNewAccount]);
-
-    const FetchedToken = fetchStoredToken();
-
-    let initialToken = FetchedToken ? FetchedToken.token : '';
+    let initialToken: string;
+    initialToken = fetchedToken ? fetchedToken.token : '';
 
     const [token, setToken] = useState(initialToken);
 
     const isAuthenticated = !!token;
-
     const logoutHandler = useCallback(() => {
         setToken('');
         localStorage.removeItem('token');
         localStorage.removeItem('tokenExpiration');
-        console.log('i was logged out');
         if (logoutTimer) clearTimeout(logoutTimer);
     }, [setToken]);
 
     const loginHandler = useCallback(
         (token: string, duration: number) => {
-            // console.log(token);
-            // console.log(duration);
             setToken(token);
             localStorage.setItem('token', token);
             localStorage.setItem('tokenExpiration', duration.toString());
@@ -92,11 +73,10 @@ export const UserAuthContextProvider: React.FunctionComponent<FCProps> = ({
     );
 
     useEffect(() => {
-        const storedToken = fetchStoredToken();
-        if (storedToken) {
-            loginHandler(storedToken.token, storedToken.duration);
+        if (fetchedToken) {
+            logoutTimer = setTimeout(logoutHandler, fetchedToken.duration);
         }
-    }, [loginHandler]);
+    }, [fetchedToken, logoutHandler]);
 
     const context = {
         token: token,
