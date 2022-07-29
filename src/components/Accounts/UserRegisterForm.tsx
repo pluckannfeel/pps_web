@@ -10,12 +10,9 @@ import {
     Paper,
     Center,
     Select,
-    InputWrapper,
-    Popover,
     Progress,
     PasswordInput,
-    Tooltip,
-    Popper
+    Tooltip
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
 
@@ -52,7 +49,13 @@ const UserRegisterForm: React.FunctionComponent<userRegisterFormProps> = (
             termsOfService: false
         },
 
-        validate: (values) => ({
+        validate: (values: {
+            firstName: string | any[];
+            lastName: string | any[];
+            email: string;
+            password: string;
+            confirm: any;
+        }) => ({
             firstName:
                 values.firstName.length < 3
                     ? 'First name must be at least 3 characters long'
@@ -112,7 +115,10 @@ const UserRegisterForm: React.FunctionComponent<userRegisterFormProps> = (
                 </Paper>
 
                 <Paper p="sm">
-                    <Group direction="row" grow>
+                    <Group
+                        // direction="row"
+                        grow
+                    >
                         <TextInput
                             required
                             label="Last Name"
@@ -131,7 +137,10 @@ const UserRegisterForm: React.FunctionComponent<userRegisterFormProps> = (
                 </Paper>
 
                 <Paper p="sm">
-                    <Group direction="row" grow>
+                    <Group
+                        //  direction="row"
+                        grow
+                    >
                         <Select
                             label="Month"
                             placeholder="April"

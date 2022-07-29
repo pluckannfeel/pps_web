@@ -65,41 +65,46 @@ const PasswordInputWithStrength: React.FunctionComponent<
     const strength = getStrength(value);
     const color = strength === 100 ? 'teal' : strength > 50 ? 'yellow' : 'red';
 
-
-    const {otherHandler, onChange: formOnChange} = props.formInputProps;
+    const { otherHandler, onChange: formOnChange } = props.formInputProps;
     return (
         <Popover
             opened={popoverOpened}
             position="bottom"
-            placement="start"
+            // placement="start"
             withArrow
-            styles={{ popover: { width: '100%' } }}
+            // styles={{ popover: { width: '100%' } }}
             trapFocus={false}
             transition="pop-top-left"
-            onFocusCapture={() => setPopoverOpened(true)}
-            onBlurCapture={() => setPopoverOpened(false)}
-            target={
-                <PasswordInput
-                    required
-                    label="Your password"
-                    placeholder="Your password"
-                    description="Strong password should include letters in lower and uppercase, at least 1 number, and at least 8 characters long."
-                    value={value}
-                    onChange={(event) => {
-                        setValue(event.target.value);
-                        formOnChange(event);
-                    }}
-                    {...otherHandler}
-                />
-            }
         >
-            <Progress
-                color={color}
-                value={strength}
-                size={5}
-                style={{ marginBottom: 10 }}
-            />
-            {checks}
+            <Popover.Target>
+                <div
+                    onFocusCapture={() => setPopoverOpened(true)}
+                    onBlurCapture={() => setPopoverOpened(false)}
+                >
+                    <PasswordInput
+                        required
+                        label="Your password"
+                        placeholder="Your password"
+                        description="Strong password should include letters in lower and uppercase, at least 1 number, and at least 8 characters long."
+                        value={value}
+                        onChange={(event) => {
+                            setValue(event.target.value);
+                            formOnChange(event);
+                        }}
+                        {...otherHandler}
+                    />
+                </div>
+            </Popover.Target>
+
+            <Popover.Dropdown>
+                <Progress
+                    color={color}
+                    value={strength}
+                    size={5}
+                    style={{ marginBottom: 10 }}
+                />
+                {checks}
+            </Popover.Dropdown>
         </Popover>
     );
 };

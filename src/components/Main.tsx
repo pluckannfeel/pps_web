@@ -12,7 +12,7 @@ import {
 import UserLogin from './Accounts/UserLogin';
 import UserRegister from './Accounts/UserRegister';
 import UserRegsister from './Accounts/UserRegister';
-import Workspace from './Dashboard/Main';
+import Workspace from './Dashboard/Workspace';
 
 // Auth context
 import UserAuthContext from './store/auth-context';
@@ -49,7 +49,7 @@ const Main: React.FunctionComponent = () => {
                         }
                     />
 
-                    <Route path="*" element={<Navigate to="/" replace />} />
+                    {/* <Route path="*" element={<Navigate to="/" replace />} /> */}
                 </Routes>
             </BrowserRouter>
         </Fragment>

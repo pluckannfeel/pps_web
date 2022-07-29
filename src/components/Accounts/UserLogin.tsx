@@ -28,7 +28,7 @@ const UserLogin: React.FunctionComponent = () => {
     return (
         <div className={classes.wrapper}>
             <div className={classes.child}>
-                <Group direction="row" spacing="sm" position="left">
+                <Group  spacing="sm" position="left">
                     <ActionIcon
                         variant="outline"
                         color={dark ? 'yellow' : 'blue'}

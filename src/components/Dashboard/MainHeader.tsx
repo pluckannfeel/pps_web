@@ -7,14 +7,8 @@ import React, { JSXElementConstructor, ReactElement } from 'react';
 //     useMantineTheme
 // } from '@mantine/core';
 
-// const MainHeader: ReactElement<
-//     any,
-//     string | JSXElementConstructor<any>
-// > = () => {
-//     const theme = useMantineTheme();
-//     return (
-        
-//     );
-// };
+const MainHeader = () => {
+    return <></>;
+};
 
-// export default MainHeader;
+export default MainHeader;
