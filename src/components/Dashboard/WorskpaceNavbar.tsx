@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
     Navbar,
     Group,
@@ -24,9 +24,11 @@ import {
 
 import useStyles from '../StylesConfig/WorskpaceNavbar';
 import Logo from '../ui/Logo';
+import UserAuthContext from '../store/auth-context';
+import { UserAuthContextProps } from '../store/auth-props';
 
 interface mainNavbarProps {
-    onLogout: () => void
+    onLogout: () => void;
     opened: boolean;
 }
 
@@ -67,9 +69,16 @@ const links = [
 ];
 
 const WorkspaceNavbar: React.FunctionComponent<mainNavbarProps> = (props) => {
+    const authCtx = useContext(UserAuthContext) as UserAuthContextProps;
     const { classes } = useStyles();
 
     const [linkActive, setLinkActive] = useState(0);
+    // const [tabId, setTabId] = useState('');
+
+    const navLinkClickHandler = (index: number, tabId: string) => {
+        setLinkActive(index)
+        authCtx.setActiveTab(tabId);
+    }
 
     const items = links.map((item, index) => (
         <NavLink
@@ -79,18 +88,14 @@ const WorkspaceNavbar: React.FunctionComponent<mainNavbarProps> = (props) => {
             description={item.description}
             rightSection={item.rightSection}
             icon={<item.icon />}
-            onClick={() => setLinkActive(index)}
+            onClick={navLinkClickHandler.bind(null, index, item.tabId)}
             variant="filled"
             childrenOffset={item.childrenOffset}
             defaultOpened
         >
             {item.subLinks &&
                 item.subLinks.map((subItem) => (
-                    <NavLink
-                        label={subItem.name}
-                        key={subItem.name}
-
-                    />
+                    <NavLink label={subItem.name} key={subItem.name} />
                 ))}
         </NavLink>
     ));
@@ -128,10 +133,9 @@ const WorkspaceNavbar: React.FunctionComponent<mainNavbarProps> = (props) => {
             </Navbar.Section>
 
             {/* Last section with normal height (depends on section content) */}
-            <Navbar.Section
-             className={classes.links}>
+            <Navbar.Section className={classes.links}>
                 <NavLink
-                    variant='subtle'
+                    variant="subtle"
                     icon={<ExitIcon fontSize={20} stroke="1.5" />}
                     label="Logout"
                     onClick={props.onLogout}

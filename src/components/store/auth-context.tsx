@@ -6,6 +6,8 @@ let logoutTimer: any;
 const UserAuthContext = React.createContext<UserAuthContextProps>({
     token: '',
     isAuthenticated: false,
+    activeTab: '',
+    setActiveTab: (tab: string) => {},
     login: (token: string, duration: number) => {},
     logout: () => {}
     // newAccount: false,
@@ -51,6 +53,7 @@ export const UserAuthContextProvider: React.FunctionComponent<FCProps> = ({
     initialToken = fetchedToken ? fetchedToken.token : '';
 
     const [token, setToken] = useState(initialToken);
+    const [activeTab, setActiveTab] = useState<string>('');
 
     const isAuthenticated = !!token;
     const logoutHandler = useCallback(() => {
@@ -63,6 +66,7 @@ export const UserAuthContextProvider: React.FunctionComponent<FCProps> = ({
     const loginHandler = useCallback(
         (token: string, duration: number) => {
             setToken(token);
+            setActiveTab('dashboard');
             localStorage.setItem('token', token);
             localStorage.setItem('tokenExpiration', duration.toString());
 
@@ -72,6 +76,12 @@ export const UserAuthContextProvider: React.FunctionComponent<FCProps> = ({
         [setToken, logoutHandler]
     );
 
+    const setActiveTabHandler = useCallback(
+        (tab: string) => {
+            setActiveTab(tab)
+        }
+        , [setActiveTab]);
+
     useEffect(() => {
         if (fetchedToken) {
             logoutTimer = setTimeout(logoutHandler, fetchedToken.duration);
@@ -79,8 +89,10 @@ export const UserAuthContextProvider: React.FunctionComponent<FCProps> = ({
     }, [fetchedToken, logoutHandler]);
 
     const context = {
-        token: token,
+        token,
         isAuthenticated,
+        activeTab,
+        setActiveTab: setActiveTabHandler,
         login: loginHandler,
         logout: logoutHandler
         // newAccount: hasNewAccount,

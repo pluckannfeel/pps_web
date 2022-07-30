@@ -79,7 +79,7 @@ const UserLoginForm: React.FunctionComponent<userRegisterFormProps> = (
                     password: values.password
                 }
             },
-            (data: { token?: string; detail?: string }) => {
+            (data: { token?: string; email?: string; detail?: string }) => {
                 // error occured
                 const hasError = !!data.detail;
                 if (hasError) {
@@ -88,6 +88,7 @@ const UserLoginForm: React.FunctionComponent<userRegisterFormProps> = (
                     return;
                 }
                 const token = data.token!;
+                const email = data.email!;
 
                 const today = new Date();
                 const tomorrow = new Date(today);

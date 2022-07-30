@@ -1,6 +1,8 @@
 export interface UserAuthContextProps {
     token: string | null;
     isAuthenticated: boolean;
+    activeTab: string;
+    setActiveTab: (tab: string) => void;
     login: (token: string, duration: number) => void;
     logout: () => void;
     // newAccount: boolean;
@@ -9,5 +11,5 @@ export interface UserAuthContextProps {
 
 export interface StoredTokenProps {
     token: string;
-    duration: Date
+    duration: Date;
 }

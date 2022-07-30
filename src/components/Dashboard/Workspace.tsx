@@ -1,15 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import {
-    AppShell,
-    Navbar,
-    Header,
-    Footer,
-    Aside,
-    Text,
-    MediaQuery,
-    Burger,
-    useMantineTheme
-} from '@mantine/core';
+import { AppShell, Footer, Text, useMantineTheme } from '@mantine/core';
 import MainNavbar from './WorskpaceNavbar';
 
 import { useNavigate } from 'react-router-dom';
@@ -18,20 +8,39 @@ import { useNavigate } from 'react-router-dom';
 import { UserAuthContextProps } from '../store/auth-props';
 import userAuthContext from '../store/auth-context';
 
+import jwtDecode, { JwtPayload } from 'jwt-decode';
+import Dashboard from './Dashboard';
+import Profile from './Profile';
+
 const Workspace: React.FC = () => {
     const userAuthCtx = useContext(userAuthContext) as UserAuthContextProps;
     const theme = useMantineTheme();
     const [opened, setOpened] = useState(false);
+    const [activeUser, setActiveUser] = useState<string | null>(null);
     let navigate = useNavigate();
 
+    const activeTab: string = userAuthCtx.activeTab;
+
+    // use to load token user credentials and tab state = only on first load!
     useEffect(() => {
-        navigate('/dashboard');
-    }, [navigate]);
+        // navigate('/dashboard');
+
+        if (userAuthCtx.token) {
+            const { username } = jwtDecode<{ username: string }>(
+                userAuthCtx.token
+            );
+
+            setActiveUser(username);
+
+            // for initial tabf
+            userAuthCtx.setActiveTab('dashboard');
+        }
+    }, []);
 
     const logoutHandler = () => {
         userAuthCtx.logout();
 
-        navigate('/', {replace: true});
+        navigate('/', { replace: true });
     };
 
     return (
@@ -91,7 +100,8 @@ const Workspace: React.FC = () => {
             //     </Header>
             // }
         >
-            <Text>Resize app to see responsive navbar in action</Text>
+            {activeTab === 'dashboard' && <Dashboard user={activeUser} />}
+            {activeTab === 'profile' && <Profile user={activeUser} />}
         </AppShell>
     );
 };
