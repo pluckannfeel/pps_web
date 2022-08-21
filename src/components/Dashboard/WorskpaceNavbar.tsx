@@ -48,8 +48,8 @@ const links = [
         tabId: 'application',
         childrenOffset: 28,
         subLinks: [
-            { name: 'Generate', tabId: 'generate' },
-            { name: 'Edit', tabId: 'edit' }
+            { name: 'Generate', parent: 'application', tabId: 'generate' },
+            { name: 'Edit', parent: 'application', tabId: 'edit' }
         ]
     },
     {
@@ -64,7 +64,16 @@ const links = [
         name: 'Settings',
         description: 'Account Settings',
         rightSection: '',
-        tabId: 'settings'
+        tabId: 'settings',
+        childrenOffset: 28,
+        subLinks: [
+            {
+                name: 'Change Password',
+                parent: 'settings',
+                tabId: 'change_password'
+            }
+            // { name: 'Edit', tabId: 'edit' }
+        ]
     }
 ];
 
@@ -72,13 +81,19 @@ const WorkspaceNavbar: React.FunctionComponent<mainNavbarProps> = (props) => {
     const authCtx = useContext(UserAuthContext) as UserAuthContextProps;
     const { classes } = useStyles();
 
-    const [linkActive, setLinkActive] = useState(0);
+    const [linkActive, setLinkActive] = useState<null | number>(0);
     // const [tabId, setTabId] = useState('');
 
     const navLinkClickHandler = (index: number, tabId: string) => {
+        console.log(index);
+        setLinkActive(index);
+        authCtx.setActiveTab(tabId);
+    };
+
+    const navSubLinkClickHandler = (index: number, tabId: string) => {
         setLinkActive(index)
         authCtx.setActiveTab(tabId);
-    }
+    };
 
     const items = links.map((item, index) => (
         <NavLink
@@ -94,9 +109,21 @@ const WorkspaceNavbar: React.FunctionComponent<mainNavbarProps> = (props) => {
             defaultOpened
         >
             {item.subLinks &&
-                item.subLinks.map((subItem) => (
-                    <NavLink label={subItem.name} key={subItem.name} />
-                ))}
+                item.subLinks.map(
+                    (subItem, subIndex) => (
+                        (
+                            <NavLink
+                                label={subItem.name}
+                                key={subItem.name}
+                                active={authCtx.activeTab === subItem.tabId}
+                                onClick={() => {
+                                    // index param is from parent navlink
+                                    navSubLinkClickHandler(index, subItem.tabId);
+                                } }
+                            />
+                        )
+                    )
+                )}
         </NavLink>
     ));
 

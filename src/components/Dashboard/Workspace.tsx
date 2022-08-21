@@ -11,6 +11,7 @@ import userAuthContext from '../store/auth-context';
 import jwtDecode, { JwtPayload } from 'jwt-decode';
 import Dashboard from './Dashboard';
 import Profile from './Profile';
+import ChangePassword from './ChangePassword';
 
 const Workspace: React.FC = () => {
     const userAuthCtx = useContext(userAuthContext) as UserAuthContextProps;
@@ -102,6 +103,7 @@ const Workspace: React.FC = () => {
         >
             {activeTab === 'dashboard' && <Dashboard user={activeUser} />}
             {activeTab === 'profile' && <Profile user={activeUser} />}
+            {activeTab === 'change_password' && <ChangePassword user={activeUser} />}
         </AppShell>
     );
 };
