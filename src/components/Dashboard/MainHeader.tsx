@@ -8,7 +8,9 @@ import React, { JSXElementConstructor, ReactElement } from 'react';
 // } from '@mantine/core';
 
 const MainHeader = () => {
-    return <></>;
+    return <>
+        
+    </>;
 };
 
 export default MainHeader;

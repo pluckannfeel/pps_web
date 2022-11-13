@@ -31,6 +31,11 @@ import { logInFormValues } from './UserProps';
 import UserAuthContext from '../store/auth-context';
 import { UserAuthContextProps } from '../store/auth-props';
 
+// language
+import { LangContextProps } from '../store/lang-props';
+import LangContext from '../store/lang-context';
+import { languageContent } from '../store/languageContent';
+
 import { useNavigate } from 'react-router-dom';
 
 type userRegisterFormProps = {
@@ -64,6 +69,19 @@ const UserLoginForm: React.FunctionComponent<userRegisterFormProps> = (
     const [responseError, setResponseError] = useState<string | undefined>('');
 
     const navigate = useNavigate();
+
+    // language
+    const { language: selectedLanguage } = useContext(LangContext);
+
+    const langSetup = {
+        email: selectedLanguage === 'en' ? languageContent.en.loginFormEmailLabelInput : languageContent.jp.loginFormEmailLabelInput,
+        password: selectedLanguage === 'en' ? languageContent.en.loginFormPasswordLabelInput : languageContent.jp.loginFormPasswordLabelInput,
+        forgotPassword: selectedLanguage === 'en' ? languageContent.en.loginFormForgotPasswordLink : languageContent.jp.loginFormForgotPasswordLink,
+        loginButton: selectedLanguage === 'en' ? languageContent.en.loginFormSubmitButton : languageContent.jp.loginFormSubmitButton,
+        createAccount: selectedLanguage === 'en' ? languageContent.en.loginCreateAccountLink2 : languageContent.jp.loginCreateAccountLink2,
+        // loginCreateAccountLink2: langCheck,
+    }
+
 
     const formSubmitHandler = (values: logInFormValues) => {
         // console.log(values);
@@ -142,7 +160,7 @@ const UserLoginForm: React.FunctionComponent<userRegisterFormProps> = (
                     <Paper p="md">
                         <TextInput
                             required
-                            label="E-mail Address"
+                            label={langSetup.email}
                             type="email"
                             placeholder="your@email.com"
                             sx={textInput}
@@ -154,7 +172,7 @@ const UserLoginForm: React.FunctionComponent<userRegisterFormProps> = (
                         <TextInput
                             required
                             type="password"
-                            label="Password"
+                            label={langSetup.password}
                             placeholder="*********"
                             sx={textInput}
                             {...form.getInputProps('password')}
@@ -163,7 +181,7 @@ const UserLoginForm: React.FunctionComponent<userRegisterFormProps> = (
 
                     <Paper p="">
                         <Text variant="link" component="a" href="#">
-                            Forgot password?
+                            {langSetup.forgotPassword}
                         </Text>
                     </Paper>
 
@@ -187,7 +205,7 @@ const UserLoginForm: React.FunctionComponent<userRegisterFormProps> = (
                                 loaderPosition="right"
                                 loading={loading}
                             >
-                                Sign In
+                                {langSetup.loginButton}
                             </Button>
                         </Group>
                     </Paper>
@@ -198,7 +216,7 @@ const UserLoginForm: React.FunctionComponent<userRegisterFormProps> = (
                             component={Link}
                             to="/register"
                         >
-                            No Account? Sign up here.
+                            {langSetup.createAccount}
                         </Text>
                     </Paper>
                 </form>

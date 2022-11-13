@@ -15,8 +15,10 @@ import {
     Container
 } from '@mantine/core';
 import { useForm } from '@mantine/form';
+import useHttpRequest from '../../hooks/use-httprequest';
 
-import PasswordInputWithStrength from '../ui/PasswordInputRequirements';
+import PasswordInputWithStrength from '../../ui/PasswordInputRequirements';
+import { showNotification } from '@mantine/notifications';
 
 type changePassProps = {
     user?: string | null;
@@ -29,6 +31,12 @@ interface changePassFormProps {
 }
 
 const ChangePassword: React.FunctionComponent<changePassProps> = ({ user }) => {
+    const {
+        loading,
+        error,
+        sendRequest: sendChangePassword
+    } = useHttpRequest();
+
     const form = useForm({
         initialValues: {
             old_password: '',
@@ -36,12 +44,16 @@ const ChangePassword: React.FunctionComponent<changePassProps> = ({ user }) => {
             confirm_password: ''
         },
         validate: (values: changePassFormProps) => ({
-            password: /^(?=.*[0-9])[a-zA-Z0-9!@#$%^&*]{8,16}$/.test(
+            old_password:
+                values.old_password.length > 8
+                    ? null
+                    : 'Old password is too short',
+            new_password: /^(?=.*[0-9])[a-zA-Z0-9!@#$%^&*]{8,16}$/.test(
                 values.new_password
             )
                 ? null
-                : 'password must be up 8 characters long and alphanumeric (contains alphabets and numbers).',
-            confirm:
+                : 'Password must be up 8 characters long and alphanumeric (contains alphabets and numbers).',
+            confirm_password:
                 values.confirm_password === values.new_password
                     ? null
                     : 'Passwords must match.'
@@ -50,6 +62,53 @@ const ChangePassword: React.FunctionComponent<changePassProps> = ({ user }) => {
 
     const formSubmitHandler = (values: changePassFormProps) => {
         console.log(values);
+
+        sendChangePassword(
+            {
+                url: 'http://localhost:8000/users/change_password',
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: {
+                    username: user,
+                    old_password: values.old_password,
+                    new_password: values.new_password
+                }
+            },
+            (data: { msg?: string; detail?: string }) => {
+                const hasError = !!data.detail;
+
+                if (hasError) {
+                    showNotification({
+                        title: 'Error changing password',
+                        message: data.detail,
+                        color: 'orange',
+                        autoClose: 5000
+                    });
+                }
+
+                // success
+                if (data.msg) {
+                    form.reset();
+                    showNotification({
+                        title: 'Success',
+                        message: data.msg,
+                        color: 'teal',
+                        autoClose: 3000
+                    });
+                }
+            }
+        );
+
+        if (error && !loading) {
+            showNotification({
+                title: 'Error changing password',
+                message: error,
+                color: 'orange',
+                autoClose: 5000
+            });
+        }
     };
 
     const textInput: CSSObject = {
@@ -104,7 +163,7 @@ const ChangePassword: React.FunctionComponent<changePassProps> = ({ user }) => {
                             gradient={{ from: 'orange', to: 'red' }}
                             type="submit"
                             loaderPosition="right"
-                            // loading={loading}
+                            loading={loading}
                         >
                             Change Password
                         </Button>

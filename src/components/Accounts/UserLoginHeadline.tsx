@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
     Box,
     Group,
@@ -13,11 +13,25 @@ import { headerTitleStyleProp } from './CssHelpers';
 // import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 
+import { LangContextProps } from '../store/lang-props';
+import LangContext from '../store/lang-context';
+import { languageContent } from '../store/languageContent';
+
 const UserLoginHeadline = () => {
     const { colorScheme } = useMantineColorScheme();
     const dark = colorScheme === 'dark';
 
     // const navigate = useNavigate();
+
+    // language
+    const { language: selectedLanguage } = useContext(LangContext) as LangContextProps;
+
+    let langSetup = {
+        loginHeadline:selectedLanguage === 'en' ? languageContent.en.loginHeadline : languageContent.jp.loginHeadline,
+        loginSubHeadline:selectedLanguage === 'en' ? languageContent.en.loginSubHeadline : languageContent.jp.loginSubHeadline,
+        loginButtonLabel:selectedLanguage === 'en' ? languageContent.en.loginCreateAccountLink1 : languageContent.jp.loginCreateAccountLink1,
+    };
+
 
     return (
         <Center>
@@ -31,12 +45,10 @@ const UserLoginHeadline = () => {
                     color={dark ? '#F9F7F7' : '#112D4E'}
                     sx={headerTitleStyleProp}
                 >
-                    Polo Processing <br /> System
+                    {langSetup.loginHeadline}
                 </Text>
                 <Text align="center" m="xs">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.{' '}
-                    <br />
-                    Maxime mollitia, molestiae quas vel sint commodi repudiandae
+                    {langSetup.loginSubHeadline}
                 </Text>
 
                 <Group position="center">
@@ -47,7 +59,7 @@ const UserLoginHeadline = () => {
                         component={Link}
                         to="/register"
                     >
-                        Create an Account
+                        {langSetup.loginButtonLabel}
                     </Button>
                 </Group>
             </Paper>

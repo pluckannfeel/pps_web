@@ -6,22 +6,24 @@ import { useNavigate } from 'react-router-dom';
 // import MainHeader from './MainHeader';
 
 import { UserAuthContextProps } from '../store/auth-props';
-import userAuthContext from '../store/auth-context';
+import UserAuthContext from '../store/auth-context';
 
 import jwtDecode, { JwtPayload } from 'jwt-decode';
 import Dashboard from './Dashboard';
-import Profile from './Profile';
-import ChangePassword from './ChangePassword';
+import Profile from './Profile/Profile';
+import ChangePassword from './Settings/ChangePassword';
+import Generate from './Application/Generate';
+import { LanguagePicker } from '../ui/languagepicker';
 
 const Workspace: React.FC = () => {
-    const userAuthCtx = useContext(userAuthContext) as UserAuthContextProps;
+    const userAuthCtx = useContext(UserAuthContext);
     const theme = useMantineTheme();
     const [opened, setOpened] = useState(false);
     const [activeUser, setActiveUser] = useState<string | null>(null);
     let navigate = useNavigate();
 
     const activeTab: string = userAuthCtx.activeTab;
-
+    
     // use to load token user credentials and tab state = only on first load!
     useEffect(() => {
         // navigate('/dashboard');
@@ -71,7 +73,7 @@ const Workspace: React.FC = () => {
             // }
             footer={
                 <Footer height={60} p="md">
-                    Application Taskbar
+                    {/* <LanguagePicker/> */}
                 </Footer>
             }
             // header={
@@ -103,6 +105,7 @@ const Workspace: React.FC = () => {
         >
             {activeTab === 'dashboard' && <Dashboard user={activeUser} />}
             {activeTab === 'profile' && <Profile user={activeUser} />}
+            {activeTab === 'generate' && <Generate user={activeUser} />}
             {activeTab === 'change_password' && <ChangePassword user={activeUser} />}
         </AppShell>
     );

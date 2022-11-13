@@ -10,11 +10,11 @@ import { useHotkeys, useLocalStorage } from '@mantine/hooks';
 import { NotificationsProvider } from '@mantine/notifications';
 
 import { UserAuthContextProvider } from './components/store/auth-context';
+import { LangContextProvider } from './components/store/lang-context';
 
 import Main from './components/Main';
 
 const App: React.FC = () => {
-
     const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
         key: 'mantine-color-scheme',
         defaultValue: 'light',
@@ -47,9 +47,11 @@ const App: React.FC = () => {
                     primaryColor: 'orange'
                 }}
             >
-                <NotificationsProvider>
+                <NotificationsProvider position="top-right">
                     <UserAuthContextProvider>
-                        <Main/>
+                        <LangContextProvider>
+                            <Main />
+                        </LangContextProvider>
                     </UserAuthContextProvider>
                 </NotificationsProvider>
             </MantineProvider>

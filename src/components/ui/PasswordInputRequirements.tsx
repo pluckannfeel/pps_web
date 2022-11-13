@@ -1,8 +1,14 @@
 import { Text, Box, Popover, Progress, PasswordInput } from '@mantine/core';
 import { CheckIcon, Cross1Icon } from '@radix-ui/react-icons';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { isPropertySignature } from 'typescript';
+
 // import { isPropertySignature } from 'typescript';
+
+// language
+import { LangContextProps } from '../store/lang-props';
+import LangContext from '../store/lang-context';
+import { languageContent } from '../store/languageContent';
 
 export const PasswordRequirement = ({
     meets,
@@ -66,6 +72,15 @@ const PasswordInputWithStrength: React.FunctionComponent<
     const color = strength === 100 ? 'teal' : strength > 50 ? 'yellow' : 'red';
 
     const { otherHandler, onChange: formOnChange } = props.formInputProps;
+
+        // language
+    const { language: selectedLanguage } = useContext(LangContext) as LangContextProps;
+
+    const langSetup = {
+        registerPasswordLabel : selectedLanguage === 'en' ? languageContent.en.registerUserPasswordLabel : languageContent.jp.registerUserPasswordLabel,
+        registerPasswordSuggestion: selectedLanguage === 'en' ? languageContent.en.registerUserPasswordSuggestion : languageContent.jp.registerPasswordSuggestion,
+    }
+
     return (
         <Popover
             opened={popoverOpened}
@@ -83,9 +98,9 @@ const PasswordInputWithStrength: React.FunctionComponent<
                 >
                     <PasswordInput
                         required
-                        label="Your password"
-                        placeholder="Your password"
-                        description="Strong password should include letters in lower and uppercase, at least 1 number, and at least 8 characters long."
+                        label={langSetup.registerPasswordLabel}
+                        placeholder={langSetup.registerPasswordLabel}
+                        description={langSetup.registerPasswordSuggestion}
                         value={value}
                         onChange={(event) => {
                             setValue(event.target.value);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import {
     TextInput,
     Checkbox,
@@ -24,6 +24,11 @@ import { monthOptions, dayOptions, yearsOptions } from './DateHelper';
 // user props
 import { registerFormProps } from './UserProps';
 import PasswordInputWithStrength from '../ui/PasswordInputRequirements';
+
+// language
+import { LangContextProps } from '../store/lang-props';
+import LangContext from '../store/lang-context';
+import { languageContent } from '../store/languageContent';
 
 type userRegisterFormProps = {
     onRegisterUser: (values: registerFormProps) => void;
@@ -76,15 +81,6 @@ const UserRegisterForm: React.FunctionComponent<userRegisterFormProps> = (
                     : 'Passwords must match.'
             // termsOfService: values.termsOfService ? null : 'You must accept terms of service.'
         })
-        // 'You must accept the terms of service and privacy policy.'
-        // validate:  {
-        //     email: (value) =>
-        //         /^\S+@\S+$/.test(value) ? null : 'Invalid email',
-        //     password: (value) =>
-        //         /^(?=.*[0-9])[a-zA-Z0-9!@#$%^&*]{6,24}$/.test(value)
-        //             ? null
-        //             : 'password must be alphanumeric (contains alphabets and numbers) and must be more than 8 characters.'
-        // }
     });
 
     const formSubmitHandler = (values: registerFormProps) => {
@@ -104,6 +100,24 @@ const UserRegisterForm: React.FunctionComponent<userRegisterFormProps> = (
     const { onChange: otherOnChange, ...passwordInputProps } =
         form.getInputProps('password');
 
+    // language
+    const { language: selectedLanguage } = useContext(LangContext);
+
+    const langSetup = {
+        registerHeadline: selectedLanguage === 'en' ? languageContent.en.registerHeadline : languageContent.jp.registerHeadline,
+        registerLastName: selectedLanguage === 'en' ? languageContent.en.registerUserLastNameLabel : languageContent.jp.registerUserLastNameLabel,
+        registerFirstName: selectedLanguage === 'en' ? languageContent.en.registerUserFirstNameLabel : languageContent.jp.registerUserFirstNameLabel,
+        registerMonth: selectedLanguage === 'en' ? languageContent.en.registerUserMonthLabel : languageContent.jp.registerUserMonthLabel,
+        registerDay: selectedLanguage === 'en' ? languageContent.en.registerUserDayLabel : languageContent.jp.registerUserDayLabel,
+        registerYear: selectedLanguage === 'en' ? languageContent.en.registerUserYearLabel : languageContent.jp.registerUserYearLabel,
+        registerEmail: selectedLanguage === 'en' ? languageContent.en.registerUserEmailLabel : languageContent.jp.registerUserEmailLabel,
+        registerPassword: selectedLanguage === 'en' ? languageContent.en.registerUserPasswordLabel : languageContent.jp.registerUserPasswordLabel,
+        registerConfirmPassword: selectedLanguage === 'en' ? languageContent.en.registerUserConfirmPasswordLabel : languageContent.jp.registerUserConfirmPasswordLabel,
+        registerTermsOfService: selectedLanguage === 'en' ? languageContent.en.registerUserTermsAndConditionsLabel : languageContent.jp.registerUserTermsAndConditionsLabel,
+        registerButton: selectedLanguage === 'en' ? languageContent.en.registerSubmitButton : languageContent.jp.registerSubmitButton,
+        registerNotTPChecked: selectedLanguage === 'en' ? languageContent.en.registerNotTPChecked : languageContent.jp.registerNotTPChecked,
+    }
+
     return (
         <Center>
             <form
@@ -111,7 +125,7 @@ const UserRegisterForm: React.FunctionComponent<userRegisterFormProps> = (
                 onSubmit={form.onSubmit(formSubmitHandler)}
             >
                 <Paper p="md">
-                    <Text sx={sectionTitleStyleProp}>Create an Account</Text>
+                    <Text sx={sectionTitleStyleProp}>{langSetup.registerHeadline}</Text>
                 </Paper>
 
                 <Paper p="sm">
@@ -121,15 +135,15 @@ const UserRegisterForm: React.FunctionComponent<userRegisterFormProps> = (
                     >
                         <TextInput
                             required
-                            label="Last Name"
-                            placeholder="Hashimoto"
+                            label={langSetup.registerLastName}
+                            placeholder={langSetup.registerLastName}
                             sx={textInput}
                             {...form.getInputProps('lastName')}
                         />
                         <TextInput
                             required
-                            label="First Name"
-                            placeholder="Satoshi"
+                            label={langSetup.registerFirstName}
+                            placeholder={langSetup.registerLastName}
                             sx={textInput}
                             {...form.getInputProps('firstName')}
                         />
@@ -142,8 +156,8 @@ const UserRegisterForm: React.FunctionComponent<userRegisterFormProps> = (
                         grow
                     >
                         <Select
-                            label="Month"
-                            placeholder="April"
+                            label={langSetup.registerMonth}
+                            placeholder={langSetup.registerMonth}
                             searchable
                             clearable
                             required
@@ -152,8 +166,8 @@ const UserRegisterForm: React.FunctionComponent<userRegisterFormProps> = (
                             {...form.getInputProps('month')}
                         />
                         <Select
-                            label="Day"
-                            placeholder="21"
+                            label={langSetup.registerDay}
+                            placeholder={langSetup.registerDay}
                             searchable
                             clearable
                             required
@@ -162,8 +176,8 @@ const UserRegisterForm: React.FunctionComponent<userRegisterFormProps> = (
                             {...form.getInputProps('day')}
                         />
                         <Select
-                            label="Year"
-                            placeholder="1996"
+                            label={langSetup.registerYear}
+                            placeholder={langSetup.registerYear}
                             searchable
                             required
                             nothingFound="No options"
@@ -176,7 +190,7 @@ const UserRegisterForm: React.FunctionComponent<userRegisterFormProps> = (
                 <Paper p="md">
                     <TextInput
                         required
-                        label="E-mail Address"
+                        label={langSetup.registerEmail}
                         placeholder="your@email.com"
                         sx={textInput}
                         {...form.getInputProps('email')}
@@ -217,7 +231,7 @@ const UserRegisterForm: React.FunctionComponent<userRegisterFormProps> = (
                 <Paper p="md">
                     <TextInput
                         required
-                        label="Confirm Password"
+                        label={langSetup.registerConfirmPassword}
                         type="password"
                         sx={textInput}
                         {...form.getInputProps('confirm')}
@@ -234,7 +248,7 @@ const UserRegisterForm: React.FunctionComponent<userRegisterFormProps> = (
                     <Checkbox
                         mt="md"
                         sx={textInput}
-                        label="By registering, you agree to PPS's Terms of Service and Privacy Policy"
+                        label={langSetup.registerTermsOfService}
                         {...form.getInputProps('termsOfService', {
                             type: 'checkbox'
                         })}
@@ -242,8 +256,7 @@ const UserRegisterForm: React.FunctionComponent<userRegisterFormProps> = (
 
                     {!isTPChecked ? (
                         <Text variant="text" size="sm" color="red">
-                            You must accept the terms of service and privacy
-                            policy.
+                            {langSetup.registerNotTPChecked}
                         </Text>
                     ) : null}
                 </Paper>
@@ -257,7 +270,7 @@ const UserRegisterForm: React.FunctionComponent<userRegisterFormProps> = (
                             gradient={{ from: 'orange', to: 'red' }}
                             type="submit"
                         >
-                            Create Account
+                            {langSetup.registerButton}
                         </Button>
                     </Group>
                 </Paper>
