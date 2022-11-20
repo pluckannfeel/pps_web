@@ -1,5 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { AppShell, Footer, Text, useMantineTheme } from '@mantine/core';
+import {
+    AppShell,
+    ActionIcon,
+    Footer,
+    Group,
+    Text,
+    useMantineTheme,
+    useMantineColorScheme
+} from '@mantine/core';
 import MainNavbar from './WorskpaceNavbar';
 
 import { useNavigate } from 'react-router-dom';
@@ -8,12 +16,18 @@ import { useNavigate } from 'react-router-dom';
 import { UserAuthContextProps } from '../store/auth-props';
 import UserAuthContext from '../store/auth-context';
 
+import { Sun, MoonStars, World, Check } from 'tabler-icons-react';
 import jwtDecode, { JwtPayload } from 'jwt-decode';
 import Dashboard from './Dashboard';
 import Profile from './Profile/Profile';
 import ChangePassword from './Settings/ChangePassword';
 import Generate from './Application/Generate';
+
+// language
+import { LangContextProps } from '../store/lang-props';
+import LangContext from '../store/lang-context';
 import { LanguagePicker } from '../ui/languagepicker';
+import useStyles from '../StylesConfig';
 
 const Workspace: React.FC = () => {
     const userAuthCtx = useContext(UserAuthContext);
@@ -23,7 +37,8 @@ const Workspace: React.FC = () => {
     let navigate = useNavigate();
 
     const activeTab: string = userAuthCtx.activeTab;
-    
+    const userLangCtx = useContext(LangContext);
+
     // use to load token user credentials and tab state = only on first load!
     useEffect(() => {
         // navigate('/dashboard');
@@ -46,6 +61,16 @@ const Workspace: React.FC = () => {
         navigate('/', { replace: true });
     };
 
+    // theme color
+    const { classes } = useStyles();
+    const { colorScheme, toggleColorScheme } = useMantineColorScheme();
+    const dark = colorScheme === 'dark';
+
+    // language
+    const languageClickHandler = (lang: string) => {
+        userLangCtx.setLanguage(lang);
+    };
+
     return (
         <AppShell
             styles={{
@@ -56,9 +81,8 @@ const Workspace: React.FC = () => {
                             : theme.colors.gray[0]
                 }
             }}
-            navbarOffsetBreakpoint="sm"
+            // navbarOffsetBreakpoint="sm"
             asideOffsetBreakpoint="sm"
-            fixed
             navbar={<MainNavbar onLogout={logoutHandler} opened={opened} />}
             // aside={
             //     <MediaQuery smallerThan="sm" styles={{ display: 'none' }}>
@@ -73,9 +97,23 @@ const Workspace: React.FC = () => {
             // }
             footer={
                 <Footer height={60} p="md">
-                    {/* <LanguagePicker/> */}
+                    <Group position="right">
+                        <ActionIcon
+                            variant="outline"
+                            color={dark ? 'yellow' : 'blue'}
+                            onClick={() => toggleColorScheme()}
+                            title="Toggle Color Scheme"
+                        >
+                            {dark ? <Sun size={18} /> : <MoonStars size={18} />}
+                        </ActionIcon>
+
+                        <LanguagePicker
+                            onClickLanguage={languageClickHandler}
+                        />
+                    </Group>
                 </Footer>
             }
+            
             // header={
             //     <Header height={60} p="md">
             //         <div
@@ -106,7 +144,9 @@ const Workspace: React.FC = () => {
             {activeTab === 'dashboard' && <Dashboard user={activeUser} />}
             {activeTab === 'profile' && <Profile user={activeUser} />}
             {activeTab === 'generate' && <Generate user={activeUser} />}
-            {activeTab === 'change_password' && <ChangePassword user={activeUser} />}
+            {activeTab === 'change_password' && (
+                <ChangePassword user={activeUser} />
+            )}
         </AppShell>
     );
 };

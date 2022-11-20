@@ -9,7 +9,7 @@ import {
     useMantineColorScheme
 } from '@mantine/core';
 
-import { headerTitleStyleProp } from './CssHelpers';
+import { headerTitleStyleProp } from '../helpers/CssHelpers';
 // import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 
@@ -58,6 +58,7 @@ const UserLoginHeadline = () => {
                         gradient={{ from: 'indigo', to: 'cyan' }}
                         component={Link}
                         to="/register"
+                        
                     >
                         {langSetup.loginButtonLabel}
                     </Button>

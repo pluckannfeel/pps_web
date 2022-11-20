@@ -17,7 +17,7 @@ import {
 import { useForm } from '@mantine/form';
 
 import classes from './UserLoginForm.module.css';
-import { sectionTitleStyleProp } from './CssHelpers';
+import { sectionTitleStyleProp } from '../helpers/CssHelpers';
 
 // react router
 import { Link } from 'react-router-dom';
@@ -47,6 +47,39 @@ const UserLoginForm: React.FunctionComponent<userRegisterFormProps> = (
 ) => {
     const authCtx = useContext(UserAuthContext) as UserAuthContextProps;
 
+    // language
+    const { language: selectedLanguage } = useContext(LangContext);
+    const langSetup = {
+        email:
+            selectedLanguage === 'en'
+                ? languageContent.en.loginFormEmailLabelInput
+                : languageContent.jp.loginFormEmailLabelInput,
+        password:
+            selectedLanguage === 'en'
+                ? languageContent.en.loginFormPasswordLabelInput
+                : languageContent.jp.loginFormPasswordLabelInput,
+        forgotPassword:
+            selectedLanguage === 'en'
+                ? languageContent.en.loginFormForgotPasswordLink
+                : languageContent.jp.loginFormForgotPasswordLink,
+        loginButton:
+            selectedLanguage === 'en'
+                ? languageContent.en.loginFormSubmitButton
+                : languageContent.jp.loginFormSubmitButton,
+        createAccount:
+            selectedLanguage === 'en'
+                ? languageContent.en.loginCreateAccountLink2
+                : languageContent.jp.loginCreateAccountLink2,
+        loginFormEmailInvalidMsg:
+            selectedLanguage === 'en'
+                ? languageContent.en.loginFormEmailInvalidMsg
+                : languageContent.jp.loginFormEmailInvalidMsg,
+        loginFormPasswordInvalidMsg:
+            selectedLanguage === 'en'
+                ? languageContent.en.loginFormPasswordInvalidMsg
+                : languageContent.jp.loginFormPasswordInvalidMsg
+    };
+
     const form = useForm({
         initialValues: {
             email: '',
@@ -56,12 +89,14 @@ const UserLoginForm: React.FunctionComponent<userRegisterFormProps> = (
 
         validate: {
             email: (value) =>
-                /^\S+@\S+$/.test(value) ? null : 'Invalid email',
+                /^\S+@\S+$/.test(value)
+                    ? null
+                    : langSetup.loginFormEmailInvalidMsg,
             password: (value) =>
                 // (?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/
                 /^(?=.*[0-9])[a-zA-Z0-9!@#$%^&*]{6,16}$/.test(value)
                     ? null
-                    : 'password must be alphanumeric (contains alphabets and numbers).'
+                    : langSetup.loginFormPasswordInvalidMsg
         }
     });
 
@@ -69,19 +104,6 @@ const UserLoginForm: React.FunctionComponent<userRegisterFormProps> = (
     const [responseError, setResponseError] = useState<string | undefined>('');
 
     const navigate = useNavigate();
-
-    // language
-    const { language: selectedLanguage } = useContext(LangContext);
-
-    const langSetup = {
-        email: selectedLanguage === 'en' ? languageContent.en.loginFormEmailLabelInput : languageContent.jp.loginFormEmailLabelInput,
-        password: selectedLanguage === 'en' ? languageContent.en.loginFormPasswordLabelInput : languageContent.jp.loginFormPasswordLabelInput,
-        forgotPassword: selectedLanguage === 'en' ? languageContent.en.loginFormForgotPasswordLink : languageContent.jp.loginFormForgotPasswordLink,
-        loginButton: selectedLanguage === 'en' ? languageContent.en.loginFormSubmitButton : languageContent.jp.loginFormSubmitButton,
-        createAccount: selectedLanguage === 'en' ? languageContent.en.loginCreateAccountLink2 : languageContent.jp.loginCreateAccountLink2,
-        // loginCreateAccountLink2: langCheck,
-    }
-
 
     const formSubmitHandler = (values: logInFormValues) => {
         // console.log(values);

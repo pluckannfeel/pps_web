@@ -1,4 +1,4 @@
-import { CSSObject } from "@mantine/core";
+import { CSSObject } from '@mantine/core';
 
 export const headerTitleStyleProp: CSSObject = {
     // color: '#112D4E',
@@ -26,7 +26,7 @@ export const headerTitleStyleProp: CSSObject = {
 };
 
 export const sectionTitleStyleProp: CSSObject = {
-    // color: '#112D4E',
+    color: '#112D4E',
     fontSize: 36,
     fontWeight: 'bold',
     lineHeight: 1.2,
@@ -40,4 +40,3 @@ export const sectionTitleStyleProp: CSSObject = {
         fontSize: 22
     }
 };
-

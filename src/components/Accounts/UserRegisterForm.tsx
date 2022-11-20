@@ -17,9 +17,9 @@ import {
 import { useForm } from '@mantine/form';
 
 import classes from './UserRegisterForm.module.css';
-import { sectionTitleStyleProp } from './CssHelpers';
+import { sectionTitleStyleProp } from '../helpers/CssHelpers';
 
-import { monthOptions, dayOptions, yearsOptions } from './DateHelper';
+import { monthOptions, dayOptions, yearsOptions } from '../helpers/./DateHelper';
 
 // user props
 import { registerFormProps } from './UserProps';
@@ -29,6 +29,7 @@ import PasswordInputWithStrength from '../ui/PasswordInputRequirements';
 import { LangContextProps } from '../store/lang-props';
 import LangContext from '../store/lang-context';
 import { languageContent } from '../store/languageContent';
+import { At, Check, Phone } from 'tabler-icons-react';
 
 type userRegisterFormProps = {
     onRegisterUser: (values: registerFormProps) => void;
@@ -49,6 +50,7 @@ const UserRegisterForm: React.FunctionComponent<userRegisterFormProps> = (
             month: '',
             year: '',
             email: '',
+            phone: '',
             password: '',
             confirm: '',
             termsOfService: false
@@ -58,6 +60,7 @@ const UserRegisterForm: React.FunctionComponent<userRegisterFormProps> = (
             firstName: string | any[];
             lastName: string | any[];
             email: string;
+            phone: string;
             password: string;
             confirm: any;
         }) => ({
@@ -70,6 +73,7 @@ const UserRegisterForm: React.FunctionComponent<userRegisterFormProps> = (
                     ? 'Last name must be at least 3 characters long'
                     : null,
             email: /^\S+@\S+$/.test(values.email) ? null : 'Invalid email',
+            phone: /^\d{11}$/.test(values.phone) ? null : 'Invalid phone',
             password: /^(?=.*[0-9])[a-zA-Z0-9!@#$%^&*]{8,16}$/.test(
                 values.password
             )
@@ -111,6 +115,7 @@ const UserRegisterForm: React.FunctionComponent<userRegisterFormProps> = (
         registerDay: selectedLanguage === 'en' ? languageContent.en.registerUserDayLabel : languageContent.jp.registerUserDayLabel,
         registerYear: selectedLanguage === 'en' ? languageContent.en.registerUserYearLabel : languageContent.jp.registerUserYearLabel,
         registerEmail: selectedLanguage === 'en' ? languageContent.en.registerUserEmailLabel : languageContent.jp.registerUserEmailLabel,
+        registerPhone: selectedLanguage === 'en' ? languageContent.en.registerUserPhoneLabel : languageContent.jp.registerUserPhoneLabel,
         registerPassword: selectedLanguage === 'en' ? languageContent.en.registerUserPasswordLabel : languageContent.jp.registerUserPasswordLabel,
         registerConfirmPassword: selectedLanguage === 'en' ? languageContent.en.registerUserConfirmPasswordLabel : languageContent.jp.registerUserConfirmPasswordLabel,
         registerTermsOfService: selectedLanguage === 'en' ? languageContent.en.registerUserTermsAndConditionsLabel : languageContent.jp.registerUserTermsAndConditionsLabel,
@@ -188,13 +193,27 @@ const UserRegisterForm: React.FunctionComponent<userRegisterFormProps> = (
                 </Paper>
 
                 <Paper p="md">
+                <Group
+                        //  direction="row"
+                        grow
+                    >
                     <TextInput
                         required
                         label={langSetup.registerEmail}
-                        placeholder="your@email.com"
+                        icon={<At size={18}/>}
+                        placeholder=""
                         sx={textInput}
                         {...form.getInputProps('email')}
                     />
+                    <TextInput
+                        required
+                        label={langSetup.registerPhone}
+                        icon={<Phone size={18} />}
+                        placeholder=""
+                        sx={textInput}
+                        {...form.getInputProps('phone')}
+                    />
+                    </Group>
                 </Paper>
 
                 <Paper p="md">
@@ -231,6 +250,7 @@ const UserRegisterForm: React.FunctionComponent<userRegisterFormProps> = (
                 <Paper p="md">
                     <TextInput
                         required
+                        icon={<Check size={18} />}
                         label={langSetup.registerConfirmPassword}
                         type="password"
                         sx={textInput}

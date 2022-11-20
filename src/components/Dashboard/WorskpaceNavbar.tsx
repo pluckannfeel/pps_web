@@ -85,13 +85,13 @@ const WorkspaceNavbar: React.FunctionComponent<mainNavbarProps> = (props) => {
     // const [tabId, setTabId] = useState('');
 
     const navLinkClickHandler = (index: number, tabId: string) => {
-        console.log(index);
+        // console.log(index);
         setLinkActive(index);
         authCtx.setActiveTab(tabId);
     };
 
     const navSubLinkClickHandler = (index: number, tabId: string) => {
-        setLinkActive(index)
+        setLinkActive(index);
         authCtx.setActiveTab(tabId);
     };
 
@@ -109,21 +109,17 @@ const WorkspaceNavbar: React.FunctionComponent<mainNavbarProps> = (props) => {
             defaultOpened
         >
             {item.subLinks &&
-                item.subLinks.map(
-                    (subItem, subIndex) => (
-                        (
-                            <NavLink
-                                label={subItem.name}
-                                key={subItem.name}
-                                active={authCtx.activeTab === subItem.tabId}
-                                onClick={() => {
-                                    // index param is from parent navlink
-                                    navSubLinkClickHandler(index, subItem.tabId);
-                                } }
-                            />
-                        )
-                    )
-                )}
+                item.subLinks.map((subItem, subIndex) => (
+                    <NavLink
+                        label={subItem.name}
+                        key={subItem.name}
+                        active={authCtx.activeTab === subItem.tabId}
+                        onClick={() => {
+                            // index param is from parent navlink
+                            navSubLinkClickHandler(index, subItem.tabId);
+                        }}
+                    />
+                ))}
         </NavLink>
     ));
 
@@ -131,8 +127,9 @@ const WorkspaceNavbar: React.FunctionComponent<mainNavbarProps> = (props) => {
     return (
         <Navbar
             p="md"
+            fixed
             hiddenBreakpoint="sm"
-            // hidden={!opened}
+            // hidden={opened}
             className={classes.navbar}
             // width={{ sm: 200, lg: 300 }}'
             width={{ sm: 280 }}

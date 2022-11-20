@@ -45,7 +45,7 @@ const UserLogin: React.FunctionComponent = () => {
                         title="Toggle Color Scheme"
                     >
                         {dark ? <Sun size={18} /> : <MoonStars size={18} />}
-                    </ActionIcon>
+                    </ActionIcon>   
                     
                     <LanguagePicker onClickLanguage={languageClickHandler} />
                 </Group>

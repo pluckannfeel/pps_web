@@ -5,9 +5,9 @@ type method = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
 interface requestConfigProps {
     url: string;
-    method: method;
-    headers: {};
-    body: {};
+    method?: method;
+    headers?: {};
+    body?: {};
 }
 
 

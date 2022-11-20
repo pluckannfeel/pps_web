@@ -57,14 +57,14 @@ const UserRegister = () => {
                     username: values.email,
                     birth_date: `${values.year}-${values.month}-${values.day}`,
                     email: values.email,
+                    phone: values.phone,
                     password_hash: values.password,
                     confirm_password: values.password
                 }
             },
             (data) => {
                 // console.log(data);
-
-                navigate('/', { replace: true, state: { success: data } });
+                navigate('/', { replace: false, state: { success: data } });
 
                 // authCtx.setNewAccount();
 

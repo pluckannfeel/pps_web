@@ -9,7 +9,7 @@ import {
     Text,
     NativeSelect
 } from '@mantine/core';
-import { sectionTitleStyleProp } from '../../Accounts/CssHelpers';
+import { sectionTitleStyleProp } from '../../helpers/CssHelpers';
 import { useForm } from '@mantine/form';
 import { ChevronDown } from 'tabler-icons-react';
 

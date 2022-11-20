@@ -9,6 +9,7 @@ import { isPropertySignature } from 'typescript';
 import { LangContextProps } from '../store/lang-props';
 import LangContext from '../store/lang-context';
 import { languageContent } from '../store/languageContent';
+import { Lock } from 'tabler-icons-react';
 
 export const PasswordRequirement = ({
     meets,
@@ -98,6 +99,7 @@ const PasswordInputWithStrength: React.FunctionComponent<
                 >
                     <PasswordInput
                         required
+                        icon={<Lock size={16} />}
                         label={langSetup.registerPasswordLabel}
                         placeholder={langSetup.registerPasswordLabel}
                         description={langSetup.registerPasswordSuggestion}

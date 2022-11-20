@@ -10,6 +10,8 @@ export const languageContent = {
         loginFormForgotPasswordLink: 'Forgot Password?',
         loginFormSubmitButton: 'Sign In',
         loginCreateAccountLink2: 'No Account? Sign up here.',
+        loginFormEmailInvalidMsg: 'Email Address is Invalid.',
+        loginFormPasswordInvalidMsg: 'password must be alphanumeric (contains alphabets and numbers)',
 
         registerHeadline: 'Create an Account',
         registerUserLastNameLabel: 'Last Name',
@@ -18,6 +20,7 @@ export const languageContent = {
         registerUserDayLabel: 'Day',
         registerUserYearLabel: 'Year',
         registerUserEmailLabel: 'Email Address',
+        registerUserPhoneLabel: 'Phone Number',
         registerUserPasswordLabel: 'Password',
         registerUserConfirmPasswordLabel: 'Confirm Password',
         registerUserTermsAndConditionsLabel: "By registering, you agree to PPS's Terms of Service and Privacy Policy",
@@ -36,6 +39,8 @@ export const languageContent = {
         loginFormForgotPasswordLink: 'パスワードを忘れた方',
         loginFormSubmitButton: 'ログイン',
         loginCreateAccountLink2: 'アカウントを作成する',
+        loginFormEmailInvalidMsg: 'メールアドレスが無効です',
+        loginFormPasswordInvalidMsg: 'パスワードは英数字でなければなりません。',
 
         registerHeadline: 'アカウントを作成する',
         registerUserLastNameLabel: '姓名',
@@ -44,6 +49,7 @@ export const languageContent = {
         registerUserDayLabel: '日',
         registerUserYearLabel: '年',
         registerUserEmailLabel: 'メールアドレス',
+        registerUserPhoneLabel: '電話番号',
         registerUserPasswordLabel: 'パスワード',
         registerUserConfirmPasswordLabel: 'パスワード確認',
         registerUserTermsAndConditionsLabel: "登録することにより、お客様はPPSのサービス利用規約およびプライバシーポリシーに同意したものとみなされます。",
