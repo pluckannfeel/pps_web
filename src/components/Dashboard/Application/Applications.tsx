@@ -7,22 +7,24 @@ import {
     useMantineTheme,
     Group,
     Button,
-    Table
+    Table,
+    Grid,
+    Text
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import ApplicationForm from './ApplicationForm';
-import SampleTable from './SampleTable';
 
-type GenerateProps = {
+import { useStyles } from './Application';
+
+type ApplicationsProps = {
     user?: string | null;
 };
 
-
-
-const Generate: React.FunctionComponent<GenerateProps> = () => {
+const Applications: React.FunctionComponent<ApplicationsProps> = () => {
     const theme = useMantineTheme();
     const [opened, { close, open }] = useDisclosure(false);
 
+    const {classes} = useStyles();
     return (
         <>
             <Modal
@@ -37,14 +39,24 @@ const Generate: React.FunctionComponent<GenerateProps> = () => {
                 overlayOpacity={0.55}
                 overlayBlur={3}
             >
-                <ApplicationForm/>
+                <ApplicationForm />
             </Modal>
 
-            <Group position="right">
-                <Button onClick={open}>New Application</Button>
-            </Group>
+            <Grid justify="space-around" pt={20}>
+                <Grid.Col span="auto">
+                    <Text fw={500} className={classes.applicationText}>
+                        Company
+                    </Text>
+                </Grid.Col>
+                <Grid.Col span={6}></Grid.Col>
+                <Grid.Col span="auto">
+                    <Group position="right">
+                        <Button onClick={open}>New Application</Button>
+                    </Group>
+                </Grid.Col>
+            </Grid>
 
-            <Tabs defaultValue="professional" orientation="horizontal">
+            {/* <Tabs defaultValue="professional" orientation="horizontal">
                 <Tabs.List>
                     <Tooltip label="Professional and Skilled Workers" withArrow>
                         <Tabs.Tab value="professional">
@@ -83,9 +95,9 @@ const Generate: React.FunctionComponent<GenerateProps> = () => {
                 <Tabs.Panel value="houskeepers">
                     Settings tab content
                 </Tabs.Panel>
-            </Tabs>
+            </Tabs> */}
         </>
     );
 };
 
-export default Generate;
+export default Applications;

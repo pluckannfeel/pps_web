@@ -1,7 +1,8 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { sectionTitleStyleProp } from '../../helpers/CssHelpers';
 import {
     Box,
+    Button,
     Center,
     CSSObject,
     Divider,
@@ -19,30 +20,33 @@ import LangContext from '../../store/lang-context';
 import { languageContent } from '../../store/languageContent';
 import { At, Phone } from 'tabler-icons-react';
 
-type profileFormProps = {};
+type profileFormProps = {
+    first_name: string;
+    last_name: string;
+    phone: string;
+    email: string;
+};
 
-const ProfileForm = () => {
+type profileProps = {
+    data: { avatar: string; name: string; phone: string; email: string };
+};
+
+const ProfileForm: React.FunctionComponent<profileProps> = ({ data }) => {
     const { classes } = useStyles();
-
+    const { avatar, name, phone, email } = data;
     const form = useForm({
         initialValues: {
-            firstName: '',
-            lastName: '',
-            day: '',
-            month: '',
-            year: '',
-            email: '',
-            password: '',
-            confirm: '',
-            termsOfService: false
+            firstName: name.split(' ')[0],
+            lastName: name.split(' ')[0],
+            email: `${email}`,
+            phone: phone,
         },
 
         validate: (values: {
             firstName: string | any[];
             lastName: string | any[];
             email: string;
-            password: string;
-            confirm: any;
+            phone: string;
         }) => ({
             firstName:
                 values.firstName.length < 3
@@ -53,16 +57,7 @@ const ProfileForm = () => {
                     ? 'Last name must be at least 3 characters long'
                     : null,
             email: /^\S+@\S+$/.test(values.email) ? null : 'Invalid email',
-            password: /^(?=.*[0-9])[a-zA-Z0-9!@#$%^&*]{8,16}$/.test(
-                values.password
-            )
-                ? null
-                : 'password must be up 8 characters long and alphanumeric (contains alphabets and numbers).',
-            confirm:
-                values.confirm === values.password
-                    ? null
-                    : 'Passwords must match.'
-            // termsOfService: values.termsOfService ? null : 'You must accept terms of service.'
+            phone: values.phone.length < 10 ? 'Invalid phone number' : null,
         })
     });
 
@@ -124,7 +119,7 @@ const ProfileForm = () => {
                 : languageContent.jp.registerNotTPChecked
     };
 
-    const formSubmitHandler = (values: profileFormProps) => {
+    const formSubmitHandler = (event: React.SyntheticEvent) => {
         // props.onRegisterUser(values);
     };
 
@@ -134,40 +129,36 @@ const ProfileForm = () => {
 
     return (
         <Center>
-            <form
-                
-                onSubmit={form.onSubmit(formSubmitHandler)}
-            >
-                <Paper className={classes.form} p="xl">
-                    <Group
-                        // direction="row"
-                        grow
-                    >
-                        <TextInput
-                            required
-                            label={langSetup.registerLastName}
-                            placeholder={langSetup.registerLastName}
-                            sx={textInput}
-                            {...form.getInputProps('lastName')}
-                        />
-                        <TextInput
-                            required
-                            label={langSetup.registerFirstName}
-                            placeholder={langSetup.registerLastName}
-                            sx={textInput}
-                            {...form.getInputProps('firstName')}
-                        />
-                    </Group>
+            <form className={classes.form} onSubmit={formSubmitHandler}>
+                <Group
+                    // direction="row"
+                    grow
+                >
+                    <TextInput
+                        required
+                        label={langSetup.registerLastName}
+                        placeholder={langSetup.registerLastName}
+                        sx={textInput}
+                        {...form.getInputProps('lastName')}
+                    />
+                    <TextInput
+                        required
+                        label={langSetup.registerFirstName}
+                        placeholder={langSetup.registerLastName}
+                        sx={textInput}
+                        {...form.getInputProps('firstName')}
+                    />
+                </Group>
 
-                    <Group
-                        //  direction="row"
-                        grow
-                        mt={15}
-                    >
+                <Group
+                    //  direction="row"
+                    grow
+                    mt={15}
+                >
                     <TextInput
                         required
                         label={langSetup.registerEmail}
-                        icon={<At size={18}/>}
+                        icon={<At size={18} />}
                         placeholder=""
                         sx={textInput}
                         {...form.getInputProps('email')}
@@ -180,8 +171,14 @@ const ProfileForm = () => {
                         sx={textInput}
                         {...form.getInputProps('phone')}
                     />
-                    </Group>
-                </Paper>
+                </Group>
+
+                <Group
+                    mt={15} position='center'>
+                    <Button type="submit">
+                        Update
+                    </Button>
+                </Group>
             </form>
         </Center>
     );

@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { useState, useCallback } from 'react';
 import { Type } from 'typescript';
 
@@ -5,12 +6,12 @@ type method = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
 interface requestConfigProps {
     url: string;
-    method?: method;
+    // method?: method;
     headers?: {};
-    body?: {};
+    body: FormData;
 }
 
-const useHttpRequest = () => {
+const useFileHttpRequest = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -23,25 +24,18 @@ const useHttpRequest = () => {
             setError(null);
 
             try {
-                const response = await fetch(requestConfig.url, {
-                    method: requestConfig.method ? requestConfig.method : 'GET',
-                    headers: requestConfig.headers ? requestConfig.headers : {},
-                    body: requestConfig.body
-                        ? JSON.stringify(requestConfig.body)
-                        : null
-                });
-                // console.log(response)
-                // if (!response.ok) {
-                //     throw new Error(response.statusText);
-                // }
+                const response = await axios.post(
+                    requestConfig.url,
+                    requestConfig.body
+                );
 
-                const data = await response.json();
-                applyData(data);
+                applyData(response);
             } catch (error: unknown) {
                 if (error instanceof Error) {
                     setError(error.message);
                 }
             }
+
             setLoading(false);
         },
         []
@@ -54,5 +48,4 @@ const useHttpRequest = () => {
     };
 };
 
-export default useHttpRequest;
-
+export default useFileHttpRequest;

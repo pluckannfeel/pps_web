@@ -13,6 +13,7 @@ import { UserAuthContextProvider } from './components/store/auth-context';
 import { LangContextProvider } from './components/store/lang-context';
 
 import Main from './components/Main';
+import { ModalsProvider } from '@mantine/modals';
 
 const App: React.FC = () => {
     const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
@@ -48,11 +49,13 @@ const App: React.FC = () => {
                 }}
             >
                 <NotificationsProvider position="top-right">
-                    <UserAuthContextProvider>
-                        <LangContextProvider>
-                            <Main />
-                        </LangContextProvider>
-                    </UserAuthContextProvider>
+                    <ModalsProvider>
+                        <UserAuthContextProvider>
+                            <LangContextProvider>
+                                <Main />
+                            </LangContextProvider>
+                        </UserAuthContextProvider>
+                    </ModalsProvider>
                 </NotificationsProvider>
             </MantineProvider>
         </ColorSchemeProvider>

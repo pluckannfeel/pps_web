@@ -18,10 +18,12 @@ import UserAuthContext from '../store/auth-context';
 
 import { Sun, MoonStars, World, Check } from 'tabler-icons-react';
 import jwtDecode, { JwtPayload } from 'jwt-decode';
+
 import Dashboard from './Dashboard';
+import Applications from './Application/Applications';
 import Profile from './Profile/Profile';
+import Companies from './Company/Companies';
 import ChangePassword from './Settings/ChangePassword';
-import Generate from './Application/Generate';
 
 // language
 import { LangContextProps } from '../store/lang-props';
@@ -113,7 +115,7 @@ const Workspace: React.FC = () => {
                     </Group>
                 </Footer>
             }
-            
+
             // header={
             //     <Header height={60} p="md">
             //         <div
@@ -142,8 +144,9 @@ const Workspace: React.FC = () => {
             // }
         >
             {activeTab === 'dashboard' && <Dashboard user={activeUser} />}
+            {activeTab === 'company' && <Companies user={activeUser} />}
             {activeTab === 'profile' && <Profile user={activeUser} />}
-            {activeTab === 'generate' && <Generate user={activeUser} />}
+            {activeTab === 'generate' && <Applications user={activeUser} />}
             {activeTab === 'change_password' && (
                 <ChangePassword user={activeUser} />
             )}

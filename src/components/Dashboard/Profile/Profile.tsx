@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     Center,
     Text,
@@ -34,6 +34,7 @@ import ProfileForm from './ProfileForm';
 import { ClassNames } from '@emotion/react';
 import { ButtonMenu } from '../../ui/buttonMenu';
 import { useHover } from '@mantine/hooks';
+import { UploadPhotoModal } from './ProfileUploadPhotoModal';
 
 type profileProps = {
     user?: string | null;
@@ -60,10 +61,22 @@ const UserInfoIcons: React.FC<UserInfoIconsProps> = ({
     const [changeUserPhotoItem, setChangeUserPhotoItem] = useState<
         string | null
     >(null);
+
+    // modal open and close state
+    const [modalOpen, setModalOpen] = useState(false);
+
     const { classes } = useStyles();
+
+    useEffect(() => {
+        if (changeUserPhotoItem) {
+            // uploadphotomodal
+        }
+    }, [changeUserPhotoItem]);
 
     return (
         <Box>
+            <UploadPhotoModal user={email} open={modalOpen} onClose={() => setModalOpen(false)} />
+
             <Group noWrap>
                 <Menu shadow="md" width={200}>
                     <Menu.Target>
@@ -75,6 +88,7 @@ const UserInfoIcons: React.FC<UserInfoIconsProps> = ({
                         <Menu.Item
                             onClick={() => {
                                 setChangeUserPhotoItem('upload');
+                                setModalOpen(true);
                             }}
                             icon={<PhotoPlus size={14} />}
                         >
@@ -168,6 +182,8 @@ const Profile: React.FunctionComponent<profileProps> = ({ user }) => {
         isVerified: ''
     });
 
+    let userInformation;
+
     const { classes } = useStyles();
 
     useEffect(() => {
@@ -184,7 +200,7 @@ const Profile: React.FunctionComponent<profileProps> = ({ user }) => {
                             : '',
                         name: `${data.first_name} ${data.last_name}`,
                         email: data.email,
-                        phone: '+123 456 7890',
+                        phone: data.phone,
                         isVerified: data.is_verified
                     };
                 });
@@ -217,7 +233,7 @@ const Profile: React.FunctionComponent<profileProps> = ({ user }) => {
                     </Text>
                 </Group>
 
-                <ProfileForm />
+                <ProfileForm data={userInfo} />
             </Box>
         </React.Fragment>
     );

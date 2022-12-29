@@ -1,4 +1,4 @@
-import { sectionTitleStyleProp } from './../helpers/CssHelpers';
+import { sectionTitleStyleProp } from '../../helpers/CssHelpers';
 import { createStyles } from '@mantine/core';
 
 export const useStyles = createStyles((theme) => ({
@@ -9,7 +9,7 @@ export const useStyles = createStyles((theme) => ({
                 : theme.colors.gray[8]
     },
 
-    headerText: {
+    companyText: {
         color:
             theme.colorScheme === 'dark'
                 ? theme.colors.dark[0]
@@ -28,9 +28,22 @@ export const useStyles = createStyles((theme) => ({
         }
     },
 
-    container: {
-        width: '50vw',
-        backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.colors.gray[0],
-    }
+    name: {
+        fontFamily: `Greycliff CF, ${theme.fontFamily}`
+    },
 
+    form: {
+        // maxWidth: '50vw',
+        width: '40vw'
+    },
+
+    modal: { width: 300 },
+    modalTitle: {
+        color:
+            theme.colorScheme === 'dark'
+                ? theme.colors.dark[2]
+                : theme.colors.gray[6],
+        fontWeight: 700
+    },
+    modalLabel: { width: '160' }
 }));

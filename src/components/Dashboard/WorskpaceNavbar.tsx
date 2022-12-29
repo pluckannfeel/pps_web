@@ -22,6 +22,8 @@ import {
     ExitIcon
 } from '@radix-ui/react-icons';
 
+import { Building, UserCircle, Settings, TextPlus, Dashboard, Logout  } from 'tabler-icons-react';
+
 import useStyles from '../StylesConfig/WorskpaceNavbar';
 import Logo from '../ui/Logo';
 import UserAuthContext from '../store/auth-context';
@@ -34,33 +36,40 @@ interface mainNavbarProps {
 
 const links = [
     {
-        icon: RocketIcon,
+        icon: Dashboard,
         name: 'Dashboard',
         description: 'Application Overview, Graphs and Stats',
         rightSection: '',
         tabId: 'dashboard'
     },
     {
-        icon: Pencil2Icon,
-        name: 'Application',
+        icon: TextPlus,
+        name: 'Applications',
         description: 'Generate, Edit Application',
         rightSection: '',
         tabId: 'application',
         childrenOffset: 28,
         subLinks: [
             { name: 'Generate', parent: 'application', tabId: 'generate' },
-            { name: 'Edit', parent: 'application', tabId: 'edit' }
+            // { name: 'Edit', parent: 'application', tabId: 'edit' }
         ]
     },
     {
-        icon: AvatarIcon,
+        icon: Building,
+        name: 'Companies',
+        description: 'Companies',
+        rightSection: '',
+        tabId: 'company'
+    },
+    {
+        icon: UserCircle,
         name: 'Profile',
         description: 'Account Profile',
         rightSection: '',
         tabId: 'profile'
     },
     {
-        icon: GearIcon,
+        icon: Settings,
         name: 'Settings',
         description: 'Account Settings',
         rightSection: '',
@@ -102,7 +111,7 @@ const WorkspaceNavbar: React.FunctionComponent<mainNavbarProps> = (props) => {
             label={item.name}
             description={item.description}
             rightSection={item.rightSection}
-            icon={<item.icon />}
+            icon={<item.icon size="22" />}
             onClick={navLinkClickHandler.bind(null, index, item.tabId)}
             variant="filled"
             childrenOffset={item.childrenOffset}
@@ -160,7 +169,7 @@ const WorkspaceNavbar: React.FunctionComponent<mainNavbarProps> = (props) => {
             <Navbar.Section className={classes.links}>
                 <NavLink
                     variant="subtle"
-                    icon={<ExitIcon fontSize={20} stroke="1.5" />}
+                    icon={<ExitIcon fontSize={22} stroke="1.5" />}
                     label="Logout"
                     onClick={props.onLogout}
                 />

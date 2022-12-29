@@ -1,31 +1,40 @@
-import { Box, Divider, Paper, Text } from '@mantine/core';
+import { Box, Divider, Paper, Text, Group } from '@mantine/core';
 import React, { Fragment } from 'react';
-import { StatsControls, StatsGroup } from './DashboadSummary';
+import { StatsControls, StatsGridIcons, StatsGroup } from './DashboadSummary';
 import { useStyles } from '../StylesConfig/Dashboard';
 
 type dashboardProps = {
     user?: string | null;
 };
 
-const data = [
+const statsGridData = [
     {
-        title: 'Professionals',
-        stats: '15',
+        title: 'Applicants',
+        value: '82',
+        diff: 128,
         description: 'Professional and Skilled Workers'
     },
     {
-        title: 'HouseKeepers',
-        stats: '15',
+        title: 'Prospects',
+        value: '4',
+        diff: -23,
         description: 'Housekeepers under national strategic special zones'
     },
-    { title: 'SSWs', stats: '15', description: 'Specified Skilled Workers' },
     {
-        title: 'Trainees',
-        stats: '15',
+        title: 'Completed',
+        value: '18',
+        diff: 13,
+        description: 'Specified Skilled Workers'
+    },
+    {
+        title: 'In Progress',
+        value: '15',
+        diff: 39,
         description:
             'Technical Intern Trainees Under unde Technical Intern Program'
     }
 ];
+
 
 const Dashboard: React.FunctionComponent<dashboardProps> = ({ user }) => {
     const styles = useStyles();
@@ -38,9 +47,15 @@ const Dashboard: React.FunctionComponent<dashboardProps> = ({ user }) => {
 
                 <Divider my={25} />
 
-                <Paper className={styles.classes.container}>
-                    <StatsControls />
-                </Paper>
+                <Group position='center'>
+                    <Paper className={styles.classes.container}>
+                        <StatsControls />
+                    </Paper>
+
+                    <Paper className={styles.classes.container}>
+                        <StatsGridIcons data={statsGridData}/>
+                    </Paper>
+                </Group>
             </Box>
         </React.Fragment>
     );

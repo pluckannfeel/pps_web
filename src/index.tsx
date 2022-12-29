@@ -2,6 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
+// redux
+import { Provider } from 'react-redux';
+import rtk_store from './redux/app/rtk-store';
 // import { BrowserRouter } from 'react-router-dom';
 // import reportWebVitals from './reportWebVitals';
 
@@ -10,7 +13,9 @@ const root = ReactDOM.createRoot(
 );
 root.render(
     <React.StrictMode>
-        <App />
+        <Provider store={rtk_store}>
+            <App />
+        </Provider>
     </React.StrictMode>
 );
 
