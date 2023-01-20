@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import {
     Tabs,
@@ -34,7 +34,6 @@ import {
 
 // lodash
 import sortBy from 'lodash/sortBy';
-import { useDispatch } from 'react-redux';
 import { Edit, Sum, Trash } from 'tabler-icons-react';
 import { closeAllModals, openConfirmModal, openModal } from '@mantine/modals';
 import { sum, toInteger } from 'lodash';
@@ -88,7 +87,7 @@ const Companies: React.FunctionComponent<CompaniesProps> = ({ user }) => {
             <Grid justify="space-around" pt={20}>
                 <Grid.Col span="auto">
                     <Text fw={500} className={classes.companyText}>
-                        Company
+                        Companies
                     </Text>
                 </Grid.Col>
                 <Grid.Col span={6}></Grid.Col>
@@ -98,7 +97,7 @@ const Companies: React.FunctionComponent<CompaniesProps> = ({ user }) => {
                     </Group>
                 </Grid.Col>
             </Grid>
-{/* 
+            {/* 
             <Group p={20} position="right"></Group> */}
 
             <Divider my={20} />

@@ -30,6 +30,7 @@ import { LangContextProps } from '../store/lang-props';
 import LangContext from '../store/lang-context';
 import { LanguagePicker } from '../ui/languagepicker';
 import useStyles from '../StylesConfig';
+import Contracts from './Contracts/Contracts';
 
 const Workspace: React.FC = () => {
     const userAuthCtx = useContext(UserAuthContext);
@@ -146,7 +147,8 @@ const Workspace: React.FC = () => {
             {activeTab === 'dashboard' && <Dashboard user={activeUser} />}
             {activeTab === 'company' && <Companies user={activeUser} />}
             {activeTab === 'profile' && <Profile user={activeUser} />}
-            {activeTab === 'generate' && <Applications user={activeUser} />}
+            {activeTab === 'applications' && <Applications user={activeUser} />}
+            {activeTab === 'contracts' && <Contracts user={activeUser} />}
             {activeTab === 'change_password' && (
                 <ChangePassword user={activeUser} />
             )}

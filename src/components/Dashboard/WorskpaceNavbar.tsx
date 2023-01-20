@@ -45,12 +45,13 @@ const links = [
     {
         icon: TextPlus,
         name: 'Applications',
-        description: 'Generate, Edit Application',
+        description: 'Application, Employment Contracts',
         rightSection: '',
         tabId: 'application',
         childrenOffset: 28,
         subLinks: [
-            { name: 'Generate', parent: 'application', tabId: 'generate' },
+            { name: 'Applications', parent: 'application', tabId: 'applications' },
+            { name: 'Employment Contracts', parent: 'application', tabId: 'contracts' },
             // { name: 'Edit', parent: 'application', tabId: 'edit' }
         ]
     },

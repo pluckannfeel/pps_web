@@ -173,6 +173,7 @@ const NewCompany: React.FunctionComponent<CompanyFormProps> = ({
                         required
                         label="Clients/Services"
                         type="text"
+                        placeholder='software development, web development, etc.'
                         {...form.getInputProps('services')}
                     />
                 </Group>
