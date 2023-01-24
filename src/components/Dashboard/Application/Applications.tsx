@@ -12,7 +12,8 @@ import {
     Text,
     Divider,
     Box,
-    ActionIcon
+    ActionIcon,
+    Stack
 } from '@mantine/core';
 
 // mantine datatable
@@ -32,9 +33,10 @@ import {
 
 // lodash
 import sortBy from 'lodash/sortBy';
-import { Edit, Sum, Trash } from 'tabler-icons-react';
+import { Edit, Sum, Trash, Download } from 'tabler-icons-react';
 import { closeAllModals, openConfirmModal, openModal } from '@mantine/modals';
 import { sum } from 'lodash';
+import UpdateApplication from './UpdateApplication';
 
 type ApplicationsProps = {
     user?: string | null;
@@ -115,6 +117,10 @@ const ApplicationDataTable: React.FunctionComponent<dataTableProp> = ({
     const data = useAppSelector((state) => state.application.applications);
     const fetching = useAppSelector((state) => state.application.loading);
 
+    const dispatch = useAppDispatch();
+
+    console.log(data);
+
     const initial_record = data.slice(0, PAGE_SIZE);
 
     const [page, setPage] = useState(1);
@@ -140,6 +146,20 @@ const ApplicationDataTable: React.FunctionComponent<dataTableProp> = ({
     }, [page, setRecords, sortStatus]);
 
     // delete application
+    const deleteApplication = (id: string) => {
+        const passData = {  
+            user: user,
+            id: id
+        };
+
+        dispatch(
+            fetchRequestApplications({
+                url: 'http://localhost:8000/applications/delete',
+                method: 'DELETE',
+                body: passData
+            })
+        );
+    };
 
     return (
         <Box>
@@ -167,59 +187,74 @@ const ApplicationDataTable: React.FunctionComponent<dataTableProp> = ({
                 // idAccessor="id"
                 // define columns
                 columns={[
-                    //     {
-                    //     accessor: 'actions',
-                    //     title: <Text>Actions</Text>,
-                    //     textAlignment: 'center',
-                    //     render: (company) => (
-                    //         <Group spacing={4} position="center" noWrap>
-                    //             <ActionIcon
-                    //                 color="blue"
-                    //                 onClick={(e: React.MouseEvent) => {
-                    //                     e.stopPropagation();
-                    //                     // alert(JSON.stringify(company))
-                    //                     // editInfo(company);
-                    //                     openModal({
-                    //                         title: 'Update Company',
-                    //                         size: 'xl',
-                    //                         children: (
-                    //                             <UpdateCompany
-                    //                                 company_data={company}
-                    //                                 username={user}
-                    //                             />
-                    //                         )
-                    //                     });
-                    //                 }}
-                    //             >
-                    //                 <Edit size={16} />
-                    //             </ActionIcon>
-                    //             <ActionIcon
-                    //                 color="red"
-                    //                 onClick={(e: React.MouseEvent) => {
-                    //                     e.stopPropagation();
-
-                    //                     openConfirmModal({
-                    //                         title: `Are you sure you want to delete ${company.name}?`,
-                    //                         children: <></>,
-                    //                         onConfirm: () => {
-                    //                             deleteCompany(company.id);
-                    //                         },
-                    //                         labels: {
-                    //                             confirm: 'Yes',
-                    //                             cancel: 'Cancel'
-                    //                         }
-                    //                     });
-                    //                     // deleteCompany(company);
-                    //                 }}
-                    //             >
-                    //                 <Trash size={16} />
-                    //             </ActionIcon>
-                    //         </Group>
-                    //     )
-                    // },
                     {
-                        render: ({ id }) =>
-                            `Document - ${id.split('-')[0]}`,
+                        accessor: 'actions',
+                        title: <Text>Actions</Text>,
+                        textAlignment: 'center',
+                        render: (application) => (
+                            <Group spacing={4} position="center" noWrap>
+                                <ActionIcon
+                                    color="orange"
+                                    onClick={(e: React.MouseEvent) => {
+                                        e.stopPropagation();
+
+                                        // downloadPDF(application.id);
+                                        window.open(
+                                            'http://localhost:8000/applications/generate?application_id=' +
+                                                application.id
+                                        );
+                                    }}
+                                >
+                                    <Download size={16} />
+                                </ActionIcon>
+
+                                <ActionIcon
+                                    color="blue"
+                                    onClick={(e: React.MouseEvent) => {
+                                        e.stopPropagation();
+
+                                        openModal({
+                                            title: 'Update Application',
+                                            size: 'xl',
+                                            children: (
+                                                <UpdateApplication
+                                                application_data={application}
+                                                    user={user}
+                                                />
+                                            )
+                                        });
+                                    }}
+                                >
+                                    <Edit size={16} />
+                                </ActionIcon>
+                                <ActionIcon
+                                    color="red"
+                                    onClick={(e: React.MouseEvent) => {
+                                        e.stopPropagation();
+
+                                        openConfirmModal({
+                                            title: `Are you sure you want to delete this document?`,
+                                            children: <></>,
+                                            onConfirm: () => {
+                                                deleteApplication(
+                                                    application.id
+                                                );
+                                            },
+                                            labels: {
+                                                confirm: 'Yes',
+                                                cancel: 'Cancel'
+                                            }
+                                        });
+                                        // deleteCompany(company);
+                                    }}
+                                >
+                                    <Trash size={16} />
+                                </ActionIcon>
+                            </Group>
+                        )
+                    },
+                    {
+                        render: ({ id }) => `Document - ${id.split('-')[0]}`,
                         accessor: 'id',
                         sortable: true
                         // this column has a custom title
@@ -232,7 +267,13 @@ const ApplicationDataTable: React.FunctionComponent<dataTableProp> = ({
                         sortable: true
                     },
                     {
+                        accessor: 'company_name',
+                        title: 'Company Name',
+                        sortable: true
+                    },
+                    {
                         accessor: 'agency_name',
+                        title: '(PRA) Agency Name',
                         sortable: true
                     }
 
@@ -246,187 +287,182 @@ const ApplicationDataTable: React.FunctionComponent<dataTableProp> = ({
 
                     // actions
                 ]}
-                // onRowClick={(company) => {
-                //     return openModal({
-                //         title: `Company - ${company.name}`,
-                //         size: 'lg',
-                //         overlayOpacity: 0.55,
-                //         overlayBlur: 2,
-                //         // onClose: () => {
-                //         //     closeAllModals();
-                //         // },
-                //         children: (
-                //             <>
-                //                 {/* <Stack>
-                //                     <Group position="left">
-                //                         <Text
-                //                             className={classes.modalLabel}
-                //                             size="sm"
-                //                             weight="bolder"
-                //                         >
-                //                             Company Name:
-                //                         </Text>
-                //                         <Text size="sm">{company.name}</Text>
-                //                     </Group>
+                onRowClick={(application) => {
+                    return openModal({
+                        title: `Document Details`,
+                        size: 'lg',
+                        overlayOpacity: 0.55,
+                        overlayBlur: 2,
+                        // onClose: () => {
+                        //     closeAllModals();
+                        // },
+                        children: (
+                            <>
+                                <Stack>
+                                    <Group position="left">
+                                        <Text
+                                            className={classes.modalLabel}
+                                            size="sm"
+                                            weight="bolder"
+                                        >
+                                            Type of Application:
+                                        </Text>
+                                        <Text size="sm">
+                                            {application.application_type}
+                                        </Text>
+                                    </Group>
 
-                //                     <Group position="left">
-                //                         <Text
-                //                             className={classes.modalLabel}
-                //                             size="sm"
-                //                             weight="bolder"
-                //                         >
-                //                             Year Established:
-                //                         </Text>
-                //                         <Text size="sm">
-                //                             {company.year_established.toString()}
-                //                         </Text>
-                //                     </Group>
+                                    <Group position="left">
+                                        <Text
+                                            className={classes.modalLabel}
+                                            size="sm"
+                                            weight="bolder"
+                                        >
+                                            Employment Category:
+                                        </Text>
+                                        <Text size="sm">
+                                            {application.employer_category}
+                                        </Text>
+                                    </Group>
 
-                //                     <Group position="left">
-                //                         <Text
-                //                             className={classes.modalLabel}
-                //                             size="sm"
-                //                             weight="bolder"
-                //                         >
-                //                             Address:
-                //                         </Text>
-                //                         <Text size="sm">{company.address}</Text>
-                //                     </Group>
+                                    <Group position="left">
+                                        <Text
+                                            className={classes.modalLabel}
+                                            size="sm"
+                                            weight="bolder"
+                                        >
+                                            Date and Place Filled:
+                                        </Text>
+                                        <Text size="sm">
+                                            {application.date_filled +
+                                                ' | ' +
+                                                application.place_filled}
+                                        </Text>
+                                    </Group>
 
-                //                     <Group position="left">
-                //                         <Text
-                //                             className={classes.modalLabel}
-                //                             size="sm"
-                //                             weight="bolder"
-                //                         >
-                //                             Contact:
-                //                         </Text>
-                //                         <Text size="sm">
-                //                             {company.contact_number}
-                //                         </Text>
-                //                     </Group>
+                                    <Divider mt={5} />
 
-                //                     <Group position="left">
-                //                         <Text
-                //                             className={classes.modalLabel}
-                //                             size="sm"
-                //                             weight="bolder"
-                //                         >
-                //                             Website:
-                //                         </Text>
-                //                         <Text color="blue" size="sm">
-                //                             {company.website}
-                //                         </Text>
-                //                     </Group>
+                                    <Group position="left">
+                                        <Text
+                                            className={classes.modalLabel}
+                                            size="sm"
+                                            weight="bolder"
+                                        >
+                                            Company Name:
+                                        </Text>
+                                        <Text size="sm">
+                                            {application.company_name}
+                                        </Text>
+                                    </Group>
 
-                //                     <Group position="left">
-                //                         <Text
-                //                             className={classes.modalLabel}
-                //                             size="sm"
-                //                             weight="bolder"
-                //                         >
-                //                             Registered Industry:
-                //                         </Text>
-                //                         <Text size="sm">
-                //                             {company.registered_industry}
-                //                         </Text>
-                //                     </Group>
+                                    <Group position="left">
+                                        <Text
+                                            className={classes.modalLabel}
+                                            size="sm"
+                                            weight="bolder"
+                                        >
+                                            Company Address:
+                                        </Text>
+                                        <Text size="sm">
+                                            {application.company_address}
+                                        </Text>
+                                    </Group>
 
-                //                     <Group position="left">
-                //                         <Text
-                //                             className={classes.modalLabel}
-                //                             size="sm"
-                //                             weight="bolder"
-                //                         >
-                //                             Services:
-                //                         </Text>
-                //                         <Text size="sm">
-                //                             {company.services}
-                //                         </Text>
-                //                     </Group>
+                                    <Group position="left">
+                                        <Text
+                                            className={classes.modalLabel}
+                                            size="sm"
+                                            weight="bolder"
+                                        >
+                                            Contact Number:
+                                        </Text>
+                                        <Text size="sm">
+                                            {application.company_contact_number}
+                                        </Text>
+                                    </Group>
 
-                //                     <Group position="left">
-                //                         <Text
-                //                             className={classes.modalLabel}
-                //                             size="sm"
-                //                             weight="bolder"
-                //                         >
-                //                             Representative:
-                //                         </Text>
-                //                         <Text size="sm">
-                //                             {company.rep_position +
-                //                                 ' - ' +
-                //                                 company.rep_name}
-                //                         </Text>
-                //                     </Group>
+                                    <Group position="left">
+                                        <Text
+                                            className={classes.modalLabel}
+                                            size="sm"
+                                            weight="bolder"
+                                        >
+                                            Company Website:
+                                        </Text>
+                                        <Text color="blue" size="sm">
+                                            {application.company_website}
+                                        </Text>
+                                    </Group>
 
-                //                     <Group position="left">
-                //                         <Text
-                //                             className={classes.modalLabel}
-                //                             size="sm"
-                //                             weight="bolder"
-                //                         >
-                //                             Total Number of Workers:
-                //                         </Text>
-                //                         <Text size="sm">
-                //                             {sum([
-                //                                 company.regular_workers,
-                //                                 company.parttime_workers,
-                //                                 company.foreign_workers
-                //                             ])}
-                //                         </Text>
-                //                     </Group>
+                                    <Group position="left">
+                                        <Text
+                                            className={classes.modalLabel}
+                                            size="sm"
+                                            weight="bolder"
+                                        >
+                                            Company Representative:
+                                        </Text>
+                                        <Text size="sm">
+                                            {application.company_rep_position +
+                                                ' - ' +
+                                                application.company_rep_name}
+                                        </Text>
+                                    </Group>
 
-                //                     <Group position="left">
-                //                         <Text
-                //                             className={classes.modalLabel}
-                //                             size="sm"
-                //                             weight="bolder"
-                //                         >
-                //                             Regular Workers:
-                //                         </Text>
-                //                         <Text size="sm">
-                //                             {company.regular_workers}
-                //                         </Text>
-                //                     </Group>
+                                    <Divider mt={5} />
 
-                //                     <Group position="left">
-                //                         <Text
-                //                             className={classes.modalLabel}
-                //                             size="sm"
-                //                             weight="bolder"
-                //                         >
-                //                             Part Time Workers:
-                //                         </Text>
-                //                         <Text size="sm">
-                //                             {company.parttime_workers}
-                //                         </Text>
-                //                     </Group>
+                                    <Group position="left">
+                                        <Text
+                                            className={classes.modalLabel}
+                                            size="sm"
+                                            weight="bolder"
+                                        >
+                                            Agency Name:
+                                        </Text>
+                                        <Text size="sm">
+                                            {application.agency_name}
+                                        </Text>
+                                    </Group>
 
-                //                     <Group position="left">
-                //                         <Text
-                //                             className={classes.modalLabel}
-                //                             size="sm"
-                //                             weight="bolder"
-                //                         >
-                //                             Foreign Workers:
-                //                         </Text>
-                //                         <Text size="sm">
-                //                             {company.foreign_workers}
-                //                         </Text>
-                //                     </Group>
-                //                 </Stack> */}
+                                    <Group position="left">
+                                        <Text
+                                            className={classes.modalLabel}
+                                            size="sm"
+                                            weight="bolder"
+                                        >
+                                            Agency Address:
+                                        </Text>
+                                        <Text size="sm">
+                                            {application.agency_address}
+                                        </Text>
+                                    </Group>
 
-                //                 {/* <Button
-                //                     size="xs"
-                //                     onClick={() => closeAllModals()}
-                //                 >
-                //                     Close
-                //                 </Button> */}
-                //             </>
-                //         )
-                //     });
-                // }}
+                                    <Group position="left">
+                                        <Text
+                                            className={classes.modalLabel}
+                                            size="sm"
+                                            weight="bolder"
+                                        >
+                                            Agency Representative:
+                                        </Text>
+                                        <Text size="sm">
+                                            {application.agency_rep_position +
+                                                ' - ' +
+                                                application.agency_rep_name}
+                                        </Text>
+                                    </Group>
+                                </Stack>
+
+                                {/* <Button
+                                    size="xs"
+                                    onClick={() => closeAllModals()}
+                                >
+                                    Close
+                                </Button> */}
+                            </>
+                        )
+                    });
+                }}
             />
         </Box>
     );

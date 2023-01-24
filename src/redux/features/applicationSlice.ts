@@ -2,6 +2,9 @@ import { useCallback } from 'react';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 
+// domain name
+import {domain_name} from './domainCredentials';
+
 export type Application = {
     id: string;
     application_type: string;
@@ -20,6 +23,24 @@ export type Application = {
     job_basic_salary2: number;
     job_positions: string[];
     visa_type: string;
+
+    company_id: string;
+    company_contact_number: number;
+    company_contact_person_email: string;
+    company_contact_person_name: string;
+    company_contact_person_number: number;
+    company_contact_person_position: string;
+    company_foreign_workers: number;
+    company_name: string;
+    company_address: string;
+    company_parttime_workers: number;
+    company_registered_industry: string;
+    company_regular_worker: number;
+    company_rep_name: string;
+    company_rep_position: string;
+    company_services: string;
+    company_website: string;
+    company_year_established: string;
 };
 
 type InitialState = {
@@ -64,6 +85,18 @@ export const fetchRequestApplications = createAsyncThunk(
         }).then((response) => response.data);
     }
 );
+
+// create a reducer that calls an api 
+// export const generateApplication = createAsyncThunk(
+//     'company/generateApplication',
+//     async (application_id: string) => {
+//         return await axios({
+//             method: 'GET',
+//             url: `${domain_name}/applications/generate?application_id=${application_id}`
+//         }).then((response) => response.data);
+//     }
+// );
+
 
 const applicationSlice = createSlice({
     name: 'application',
@@ -136,6 +169,29 @@ const applicationSlice = createSlice({
             state.applications = [];
             state.error = action.error.message || 'Something went wrong.';
         });
+
+        // generate application
+        // builder.addCase(generateApplication.pending, (state) => {
+        //     state.loading = true;
+        // }
+
+        // );
+
+        // builder.addCase(
+        //     generateApplication.fulfilled,
+        //     (state, action: PayloadAction<ActionPayloadProps>) => {
+        //         state.loading = false;
+        //         state.success = action.payload['msg'];
+        //         state.error = '';
+        //     }
+        // );
+
+        // builder.addCase(generateApplication.rejected, (state, action) => {
+        //     state.loading = false;
+        //     state.error = action.error.message || 'Something went wrong.';
+        // }
+        // );
+
     }
 });
 
