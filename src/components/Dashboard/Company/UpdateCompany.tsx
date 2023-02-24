@@ -31,7 +31,6 @@ type CompanyFormProps = {
     username?: string | null;
 };
 
-interface companyFormProps {}
 
 const document_types = [
     'Direct Employer （直接受入機関)',
@@ -86,7 +85,7 @@ const UpdateCompany: React.FunctionComponent<CompanyFormProps> = ({
         })
     });
 
-    const formSubmitHandler = (values: companyFormProps) => {
+    const formSubmitHandler = (values: {}) => {
         console.log(values);
 
         const passData = {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
     Tabs,
     Tooltip,
@@ -26,14 +26,53 @@ import { showNotification } from '@mantine/notifications';
 import { CheckIcon } from '@radix-ui/react-icons';
 import { closeAllModals } from '@mantine/modals';
 import dayjs from 'dayjs';
-import { Company, fetchRequestCompanies } from '../../../redux/features/companySlice';
+import {
+    Company,
+    fetchRequestCompanies
+} from '../../../redux/features/companySlice';
 import CustomLoadOverlay from '../../ui/LoadOverlay';
 import { DatePicker } from '@mantine/dates';
+import { GenerateUUID } from '../../helpers/Generals';
+import { useStyles } from './Application';
 
 type ApplicationFormProps = {
     application_data?: Application;
     // closeModal: () => void;
     user?: string | null;
+};
+
+type SubmitApplication = {
+    name: string;
+    rep_name: string;
+    rep_position: string;
+    year_established: string;
+    address: string;
+    contact_number: number;
+    website: string;
+    registered_industry: string;
+    services: string;
+    contact_person_name: string;
+    contact_person_position: string;
+    contact_person_number: number;
+    contact_person_email: string;
+
+    company_id: string;
+    application_type: string;
+    employer_category: string;
+    agency_name: string;
+    agency_address: string;
+    agency_rep_name: string;
+    agency_rep_position: string;
+    date_filled: string;
+    place_filled: string;
+    job_title1: string;
+    job_title2: string;
+    job_no_workers1: number;
+    job_no_workers2: number;
+    job_basic_salary1: number;
+    job_basic_salary2: number;
+    // job_positions: JobPositions[];
+    visa_type: string;
 };
 
 const document_types = [
@@ -79,27 +118,29 @@ const UpdateApplication: React.FunctionComponent<ApplicationFormProps> = ({
     application_data,
     user
 }) => {
+    // console.log(application_data)
+
     const dayJS = dayjs();
 
+    const dateFilledRef = useRef<HTMLInputElement>(null);
+
     // selected company
-    const [selectedCompany, setSelectedCompany] = useState<Company>(
-        {
-            id: application_data!.company_id,
-            name: application_data!.company_name,
-            rep_name: application_data!.company_rep_name,
-            rep_position: application_data!.company_rep_position,
-            year_established: application_data!.company_year_established,
-            address: application_data!.company_address,
-            contact_number: application_data!.company_contact_number,
-            website: application_data!.company_website,
-            registered_industry: application_data!.company_registered_industry,
-            services: application_data!.company_services,
-            contact_person_name: application_data!.company_contact_person_name,
-            contact_person_position: application_data!.company_contact_person_position,
-            contact_person_email: application_data!.company_contact_person_email,
-            
-        } as unknown as Company
-    );
+    const [selectedCompany, setSelectedCompany] = useState<Company>({
+        id: application_data!.company_id,
+        name: application_data!.company_name,
+        rep_name: application_data!.company_rep_name,
+        rep_position: application_data!.company_rep_position,
+        year_established: application_data!.company_year_established,
+        address: application_data!.company_address,
+        contact_number: application_data!.company_contact_number,
+        website: application_data!.company_website,
+        registered_industry: application_data!.company_registered_industry,
+        services: application_data!.company_services,
+        contact_person_name: application_data!.company_contact_person_name,
+        contact_person_position:
+            application_data!.company_contact_person_position,
+        contact_person_email: application_data!.company_contact_person_email
+    } as unknown as Company);
 
     const { loading: companyLoading, error: companyError } = useAppSelector(
         (state) => state.company
@@ -120,21 +161,24 @@ const UpdateApplication: React.FunctionComponent<ApplicationFormProps> = ({
     }
 
     const dispatch = useAppDispatch();
-    const companySuccessMessage = useAppSelector(
-        (state) => state.company.success
+    const appSuccessMessage = useAppSelector(
+        (state) => state.application.success
     );
-    
 
     const passData = {
         user: user
     };
 
     // convert job_positions json string to array
-    const job_positions = JSON.parse(application_data!.job_positions.toString())
+    const job_positions = JSON.parse(
+        application_data!.job_positions.toString()
+    );
 
     // const job_position1 = JSON.parse(application_data!.job_positions[0]);
 
     // const job_position2 = JSON.parse(application_data!.job_positions[1]);
+
+    const { classes } = useStyles();
 
     const form = useForm({
         initialValues: {
@@ -166,6 +210,7 @@ const UpdateApplication: React.FunctionComponent<ApplicationFormProps> = ({
             agency_address: application_data!.agency_address,
             agency_rep_name: application_data!.agency_rep_name,
             agency_rep_position: application_data!.agency_rep_position,
+            // date_filled is directly filled to the element
             date_filled: application_data!.date_filled,
             place_filled: application_data!.place_filled,
             job_title1: job_positions[0]['job_title'],
@@ -175,7 +220,8 @@ const UpdateApplication: React.FunctionComponent<ApplicationFormProps> = ({
             job_basic_salary1: job_positions[0]['job_basic_salary'],
             job_basic_salary2: job_positions[1]['job_basic_salary'],
             visa_type: application_data!.visa_type
-        }
+        },
+        initialDirty: {}
         // validate: (values: { contact_person_email: string }) => ({
         //     //     firstName:
         //     //         values.firstName.length < 3
@@ -208,7 +254,7 @@ const UpdateApplication: React.FunctionComponent<ApplicationFormProps> = ({
             (company: Company) => company.id === value
         );
 
-        console.log(value)
+        // console.log(value)
 
         setSelectedCompany(selectedCompanyObject!);
 
@@ -234,17 +280,65 @@ const UpdateApplication: React.FunctionComponent<ApplicationFormProps> = ({
         });
     };
 
-    const formSubmitHandler = () => {
-        // console.log(values);
+    const formSubmitHandler = (values: SubmitApplication) => {
+
+        const job_positions = [
+            {
+                id: GenerateUUID(),
+                job_title: values['job_title1'],
+                job_no_workers: values['job_no_workers1'],
+                job_basic_salary: values['job_basic_salary1']
+            },
+            {
+                id: GenerateUUID(),
+                job_title: values['job_title2'],
+                job_no_workers: values['job_no_workers2'],
+                job_basic_salary: values['job_basic_salary2']
+            }
+        ];
+
+        const passData = {
+            id: application_data!.id,
+            user: user,
+            company: selectedCompany.id
+                ? selectedCompany.id
+                : application_data!.company_id,
+            job_positions: JSON.stringify(job_positions),
+            ...values,
+            date_filled: dateFilledRef.current!.value
+        };
+
+        console.log(passData);
+
+        dispatch(
+            fetchRequestApplications({
+                url: 'http://localhost:8000/applications/update',
+                method: 'PUT',
+                body: passData
+            })
+        );
+
+        closeAllModals();
+
+        if (appSuccessMessage) {
+            showNotification({
+                id: 'update-application',
+                title: 'Successfully Updated Application.',
+                message: appSuccessMessage,
+                color: 'yellow',
+                autoClose: 5000,
+                icon: <CheckIcon />
+            });
+        }
     };
 
     return (
         <>
             {companyLoading && applicationLoading && <CustomLoadOverlay />}
             <form onSubmit={form.onSubmit(formSubmitHandler)}>
-                <Group position="center" mb={25}>
+                {/* <Group position="center" mb={25}>
                     <Text sx={sectionTitleStyleProp}>Update Application</Text>
-                </Group>
+                </Group> */}
 
                 <Group position="center" grow>
                     <Select
@@ -292,7 +386,7 @@ const UpdateApplication: React.FunctionComponent<ApplicationFormProps> = ({
                     />
                 </Group>
 
-                <Divider my={30} />
+                <Divider my={25} />
 
                 <Group position="center" grow>
                     <TextInput
@@ -300,6 +394,10 @@ const UpdateApplication: React.FunctionComponent<ApplicationFormProps> = ({
                         required
                         label="Company Name"
                         {...form.getInputProps('name')}
+                        readOnly
+                        styles={{
+                            input: classes.readOnlyInput,
+                        }}
                     />
                     <TextInput
                         withAsterisk
@@ -307,6 +405,10 @@ const UpdateApplication: React.FunctionComponent<ApplicationFormProps> = ({
                         label="Year Established"
                         type="number"
                         {...form.getInputProps('year_established')}
+                        readOnly
+                        styles={{
+                            input: classes.readOnlyInput,
+                        }}
                     />
                 </Group>
 
@@ -317,6 +419,10 @@ const UpdateApplication: React.FunctionComponent<ApplicationFormProps> = ({
                         label="Address"
                         type="text"
                         {...form.getInputProps('address')}
+                        readOnly
+                        styles={{
+                            input: classes.readOnlyInput,
+                        }}
                     />
                     <TextInput
                         withAsterisk
@@ -325,6 +431,10 @@ const UpdateApplication: React.FunctionComponent<ApplicationFormProps> = ({
                         type="number"
                         icon={<Phone size={18} />}
                         {...form.getInputProps('contact_number')}
+                        readOnly
+                        styles={{
+                            input: classes.readOnlyInput,
+                        }}
                     />
                 </Group>
 
@@ -335,6 +445,10 @@ const UpdateApplication: React.FunctionComponent<ApplicationFormProps> = ({
                         label="Website"
                         type="text"
                         {...form.getInputProps('website')}
+                        readOnly
+                        styles={{
+                            input: classes.readOnlyInput,
+                        }}
                     />
                 </Group>
 
@@ -345,6 +459,10 @@ const UpdateApplication: React.FunctionComponent<ApplicationFormProps> = ({
                         label="Industry"
                         type="text"
                         {...form.getInputProps('registered_industry')}
+                        readOnly
+                        styles={{
+                            input: classes.readOnlyInput,
+                        }}
                     />
                     <TextInput
                         withAsterisk
@@ -352,35 +470,16 @@ const UpdateApplication: React.FunctionComponent<ApplicationFormProps> = ({
                         label="Clients/Services"
                         type="text"
                         {...form.getInputProps('services')}
+                        readOnly
+                        styles={{
+                            input: classes.readOnlyInput,
+                        }}
                     />
                 </Group>
 
-                <Group my={10} grow>
-                    <Text size="lg" weight="bolder">
-                        Representative Details
-                    </Text>
-                </Group>
-
-                <Group position="center" grow>
-                    <TextInput
-                        withAsterisk
-                        required
-                        label="Name"
-                        type="text"
-                        {...form.getInputProps('rep_name')}
-                    />
-                    <TextInput
-                        withAsterisk
-                        required
-                        label="Position"
-                        type="text"
-                        {...form.getInputProps('rep_position')}
-                    />
-                </Group>
-
-                <Group my={10} grow>
-                    <Text size="lg" weight="bolder">
-                        Contact Person
+                <Group my={8} grow>
+                    <Text size="md" weight="bolder">
+                        Company Contact Details
                     </Text>
                 </Group>
 
@@ -391,6 +490,10 @@ const UpdateApplication: React.FunctionComponent<ApplicationFormProps> = ({
                         label="Contact Name"
                         type="text"
                         {...form.getInputProps('contact_person_name')}
+                        readOnly
+                        styles={{
+                            input: classes.readOnlyInput,
+                        }}
                     />
                     <TextInput
                         withAsterisk
@@ -398,6 +501,10 @@ const UpdateApplication: React.FunctionComponent<ApplicationFormProps> = ({
                         label="Position"
                         type="text"
                         {...form.getInputProps('contact_person_position')}
+                        readOnly
+                        styles={{
+                            input: classes.readOnlyInput,
+                        }}
                     />
                 </Group>
 
@@ -409,6 +516,10 @@ const UpdateApplication: React.FunctionComponent<ApplicationFormProps> = ({
                         type="text"
                         icon={<Phone size={18} />}
                         {...form.getInputProps('contact_person_number')}
+                        readOnly
+                        styles={{
+                            input: classes.readOnlyInput,
+                        }}
                     />
                     <TextInput
                         withAsterisk
@@ -417,8 +528,49 @@ const UpdateApplication: React.FunctionComponent<ApplicationFormProps> = ({
                         type="text"
                         icon={<At size={18} />}
                         {...form.getInputProps('contact_person_email')}
+                        readOnly
+                        styles={{
+                            input: classes.readOnlyInput,
+                        }}
                     />
                 </Group>
+
+                <Group my={8} grow>
+                    <Text size="md" weight="bolder">
+                        Representative Details
+                    </Text>
+                </Group>
+
+                <Group position="center" grow>
+                    <TextInput
+                        withAsterisk
+                        required
+                        label="Name"
+                        type="text"
+                        {...form.getInputProps('rep_name')}
+                        readOnly
+                        styles={{
+                            input: classes.readOnlyInput,
+                        }}
+                    />
+                    <TextInput
+                        withAsterisk
+                        required
+                        label="Position"
+                        type="text"
+                        {...form.getInputProps('rep_position')}
+                        readOnly
+                        styles={{
+                            input: classes.readOnlyInput,
+                        }}
+                    />
+                </Group>
+
+                {/* <Group my={10} grow>
+                    <Text size="lg" weight="bolder">
+                        Contact Person
+                    </Text>
+                </Group> */}
 
                 <Group my={10} grow>
                     <Text size="lg" weight="bolder">
@@ -475,8 +627,10 @@ const UpdateApplication: React.FunctionComponent<ApplicationFormProps> = ({
                         locale="en"
                         placeholder="Select Date"
                         label="Date filled"
-                        defaultValue={new Date()}
-                        {...form.getInputProps('date_filled')}
+                        inputFormat="YYYY-MM-DD"
+                        defaultValue={new Date(application_data!.date_filled)}
+                        ref={dateFilledRef}
+                        // {...form.getInputProps('date_filled')}
                     />
                     <TextInput
                         withAsterisk
@@ -568,19 +722,19 @@ const UpdateApplication: React.FunctionComponent<ApplicationFormProps> = ({
                 <Group mt={30} position="center">
                     <Button
                         fullWidth
+                        disabled={!form.isDirty()}
                         size="md"
                         variant="gradient"
                         gradient={{ from: 'orange', to: 'red' }}
                         type="submit"
                     >
                         {/* {langSetup.registerButton} */}
-                        Enter Application
+                        Update Application
                     </Button>
                 </Group>
             </form>
         </>
     );
 };
-
 
 export default UpdateApplication;

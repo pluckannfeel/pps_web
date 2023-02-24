@@ -8,7 +8,7 @@ export const useStyles = createStyles((theme) => ({
                 ? theme.colors.dark[0]
                 : theme.colors.gray[8]
     },
-    applicationText: {
+    contractText: {
         color:
             theme.colorScheme === 'dark'
                 ? theme.colors.dark[0]

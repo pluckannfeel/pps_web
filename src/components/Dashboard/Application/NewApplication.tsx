@@ -34,6 +34,7 @@ import {
 import CustomLoadOverlay from '../../ui/LoadOverlay';
 import { showNotification } from '@mantine/notifications';
 import { CheckIcon, Cross1Icon } from '@radix-ui/react-icons';
+import { useStyles } from './Application';
 
 type Application = {
     name: string;
@@ -88,7 +89,6 @@ const application_categories = [
 ];
 
 const professional_type_visas = [
-    '',
     'Investor/Business Manager',
     'Highly Skilled Professionals',
     'Engineer/Specialist in Humanities/International Services',
@@ -108,7 +108,7 @@ const professional_type_visas = [
     'Nursing care'
 ];
 
-type NewApplicaitonProps = {
+type NewApplicationProps = {
     user?: string | null;
     closeModal: () => void;
 };
@@ -124,7 +124,7 @@ function praReducer(state: any, action: any) {
     }
 }
 
-const NewApplication: React.FunctionComponent<NewApplicaitonProps> = ({
+const NewApplication: React.FunctionComponent<NewApplicationProps> = ({
     user,
     closeModal
 }) => {
@@ -145,6 +145,8 @@ const NewApplication: React.FunctionComponent<NewApplicaitonProps> = ({
         pra_name: '',
         pra_address: ''
     });
+
+    const { classes } = useStyles();
 
     const { loading: companyLoading, error: companyError } = useAppSelector(
         (state) => state.company
@@ -193,7 +195,7 @@ const NewApplication: React.FunctionComponent<NewApplicaitonProps> = ({
             // to api
             company_id: '',
             application_type: '',
-            employer_category: '',
+            employer_category: document_types[0].value,
             agency_name: '',
             agency_address: '',
             agency_rep_name: '',
@@ -207,7 +209,14 @@ const NewApplication: React.FunctionComponent<NewApplicaitonProps> = ({
             job_basic_salary1: 0,
             job_basic_salary2: 0,
             visa_type: ''
-        }
+        },
+        validate: (values: Application) => (
+            {
+                application_type: values.application_type !== '' ? null : 'Please choose an application type.',
+                employer_category: values.employer_category !== '' ? null : 'Please choose an employer category.',
+                visa_type: values.application_type !== '' ? null : 'Please choose a visa type.'
+            }
+        ),
         // validate: (values: { contact_person_email: string }) => ({
         //     //     firstName:
         //     //         values.firstName.length < 3
@@ -288,15 +297,15 @@ const NewApplication: React.FunctionComponent<NewApplicaitonProps> = ({
         const job_positions = [
             {
                 id: GenerateUUID(),
-                job_title: values.job_title1,
-                job_no_workers: values.job_no_workers1,
-                job_basic_salary: values.job_basic_salary1
+                job_title: values['job_title1'],
+                job_no_workers: values['job_no_workers1'],
+                job_basic_salary: values['job_basic_salary1']
             },
             {
                 id: GenerateUUID(),
-                job_title: values.job_title2,
-                job_no_workers: values.job_no_workers2,
-                job_basic_salary: values.job_basic_salary2
+                job_title: values['job_title2'],
+                job_no_workers: values['job_no_workers2'],
+                job_basic_salary: values['job_basic_salary2']
             }
         ];
 
@@ -314,6 +323,7 @@ const NewApplication: React.FunctionComponent<NewApplicaitonProps> = ({
             job_positions: JSON.stringify(job_positions),
             visa_type: values.visa_type
         };
+
 
         dispatch(
             fetchRequestApplications({
@@ -404,7 +414,7 @@ const NewApplication: React.FunctionComponent<NewApplicaitonProps> = ({
                     />
                 </Group>
 
-                <Divider my={30} />
+                <Divider my={25} />
 
                 <Group position="center" grow>
                     <TextInput
@@ -412,6 +422,10 @@ const NewApplication: React.FunctionComponent<NewApplicaitonProps> = ({
                         required
                         label="Company Name"
                         {...form.getInputProps('name')}
+                        readOnly
+                        styles={{
+                            input: classes.readOnlyInput
+                        }}
                     />
                     <TextInput
                         withAsterisk
@@ -419,6 +433,10 @@ const NewApplication: React.FunctionComponent<NewApplicaitonProps> = ({
                         label="Year Established"
                         type="number"
                         {...form.getInputProps('year_established')}
+                        readOnly
+                        styles={{
+                            input: classes.readOnlyInput
+                        }}
                     />
                 </Group>
 
@@ -429,6 +447,10 @@ const NewApplication: React.FunctionComponent<NewApplicaitonProps> = ({
                         label="Address"
                         type="text"
                         {...form.getInputProps('address')}
+                        readOnly
+                        styles={{
+                            input: classes.readOnlyInput
+                        }}
                     />
                     <TextInput
                         withAsterisk
@@ -437,6 +459,10 @@ const NewApplication: React.FunctionComponent<NewApplicaitonProps> = ({
                         type="number"
                         icon={<Phone size={18} />}
                         {...form.getInputProps('contact_number')}
+                        readOnly
+                        styles={{
+                            input: classes.readOnlyInput
+                        }}
                     />
                 </Group>
 
@@ -447,6 +473,10 @@ const NewApplication: React.FunctionComponent<NewApplicaitonProps> = ({
                         label="Website"
                         type="text"
                         {...form.getInputProps('website')}
+                        readOnly
+                        styles={{
+                            input: classes.readOnlyInput
+                        }}
                     />
                 </Group>
 
@@ -457,6 +487,10 @@ const NewApplication: React.FunctionComponent<NewApplicaitonProps> = ({
                         label="Industry"
                         type="text"
                         {...form.getInputProps('registered_industry')}
+                        readOnly
+                        styles={{
+                            input: classes.readOnlyInput
+                        }}
                     />
                     <TextInput
                         withAsterisk
@@ -464,11 +498,15 @@ const NewApplication: React.FunctionComponent<NewApplicaitonProps> = ({
                         label="Clients/Services"
                         type="text"
                         {...form.getInputProps('services')}
+                        readOnly
+                        styles={{
+                            input: classes.readOnlyInput
+                        }}
                     />
                 </Group>
 
-                <Group my={10} grow>
-                    <Text size="lg" weight="bolder">
+                <Group my={8} grow>
+                    <Text size="md" weight="bolder">
                         Representative Details
                     </Text>
                 </Group>
@@ -480,6 +518,10 @@ const NewApplication: React.FunctionComponent<NewApplicaitonProps> = ({
                         label="Name"
                         type="text"
                         {...form.getInputProps('rep_name')}
+                        readOnly
+                        styles={{
+                            input: classes.readOnlyInput
+                        }}
                     />
                     <TextInput
                         withAsterisk
@@ -487,11 +529,15 @@ const NewApplication: React.FunctionComponent<NewApplicaitonProps> = ({
                         label="Position"
                         type="text"
                         {...form.getInputProps('rep_position')}
+                        readOnly
+                        styles={{
+                            input: classes.readOnlyInput
+                        }}
                     />
                 </Group>
 
-                <Group my={10} grow>
-                    <Text size="lg" weight="bolder">
+                <Group my={8} grow>
+                    <Text size="md" weight="bolder">
                         Contact Person
                     </Text>
                 </Group>
@@ -503,6 +549,10 @@ const NewApplication: React.FunctionComponent<NewApplicaitonProps> = ({
                         label="Contact Name"
                         type="text"
                         {...form.getInputProps('contact_person_name')}
+                        readOnly
+                        styles={{
+                            input: classes.readOnlyInput
+                        }}
                     />
                     <TextInput
                         withAsterisk
@@ -510,6 +560,10 @@ const NewApplication: React.FunctionComponent<NewApplicaitonProps> = ({
                         label="Position"
                         type="text"
                         {...form.getInputProps('contact_person_position')}
+                        readOnly
+                        styles={{
+                            input: classes.readOnlyInput
+                        }}
                     />
                 </Group>
 
@@ -521,6 +575,10 @@ const NewApplication: React.FunctionComponent<NewApplicaitonProps> = ({
                         type="text"
                         icon={<Phone size={18} />}
                         {...form.getInputProps('contact_person_number')}
+                        readOnly
+                        styles={{
+                            input: classes.readOnlyInput
+                        }}
                     />
                     <TextInput
                         withAsterisk
@@ -529,6 +587,10 @@ const NewApplication: React.FunctionComponent<NewApplicaitonProps> = ({
                         type="text"
                         icon={<At size={18} />}
                         {...form.getInputProps('contact_person_email')}
+                        readOnly
+                        styles={{
+                            input: classes.readOnlyInput
+                        }}
                     />
                 </Group>
 
@@ -585,6 +647,8 @@ const NewApplication: React.FunctionComponent<NewApplicaitonProps> = ({
                 <Group position="center" grow>
                     <DatePicker
                         locale="en"
+                        required
+                        withAsterisk
                         placeholder="Select Date"
                         label="Date filled"
                         defaultValue={new Date()}
@@ -667,8 +731,7 @@ const NewApplication: React.FunctionComponent<NewApplicaitonProps> = ({
                         Visa Category/Type
                     </Text>
                     <NativeSelect
-                        // label="Company Name"
-                        placeholder="Company Name"
+                        required
                         // onChange={selectedCompanyHandler}
                         data={professional_type_visas}
                         rightSection={<ChevronDown size={14} />}
@@ -686,7 +749,7 @@ const NewApplication: React.FunctionComponent<NewApplicaitonProps> = ({
                         type="submit"
                     >
                         {/* {langSetup.registerButton} */}
-                        Enter Application
+                        Create Application
                     </Button>
                 </Group>
             </form>

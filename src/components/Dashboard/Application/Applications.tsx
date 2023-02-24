@@ -30,12 +30,14 @@ import {
     Application,
     fetchRequestApplications
 } from '../../../redux/features/applicationSlice';
+import {
+    fetchRequestCompanies,
+} from '../../../redux/features/companySlice';
 
 // lodash
 import sortBy from 'lodash/sortBy';
 import { Edit, Sum, Trash, Download } from 'tabler-icons-react';
 import { closeAllModals, openConfirmModal, openModal } from '@mantine/modals';
-import { sum } from 'lodash';
 import UpdateApplication from './UpdateApplication';
 
 type ApplicationsProps = {
@@ -55,6 +57,7 @@ const Applications: React.FunctionComponent<ApplicationsProps> = ({ user }) => {
     const { loading, error } = useAppSelector((state) => state.application);
 
     useEffect(() => {
+
         dispatch(
             fetchRequestApplications({
                 url: 'http://localhost:8000/applications/application_list',
@@ -70,6 +73,7 @@ const Applications: React.FunctionComponent<ApplicationsProps> = ({ user }) => {
             <Modal
                 opened={opened}
                 onClose={close}
+                closeOnClickOutside={false}
                 size="xl"
                 overlayColor={
                     theme.colorScheme === 'dark'
@@ -119,8 +123,6 @@ const ApplicationDataTable: React.FunctionComponent<dataTableProp> = ({
 
     const dispatch = useAppDispatch();
 
-    console.log(data);
-
     const initial_record = data.slice(0, PAGE_SIZE);
 
     const [page, setPage] = useState(1);
@@ -137,6 +139,8 @@ const ApplicationDataTable: React.FunctionComponent<dataTableProp> = ({
         const from = (page - 1) * PAGE_SIZE;
         const to = from + PAGE_SIZE;
         const new_record = data.slice(from, to);
+
+        // console.log(new_record)
 
         const sortData = sortBy(new_record, sortStatus.columnAccessor);
 
@@ -159,7 +163,24 @@ const ApplicationDataTable: React.FunctionComponent<dataTableProp> = ({
                 body: passData
             })
         );
+
+        // dispatch(
+        //     fetchRequestCompanies({
+        //         url: 'http://localhost:8000/companies/company_list',
+        //         method: 'POST',
+        //         body: {
+        //             user: user
+        //         }
+        //     })
+        // );
     };
+
+    let minHeight;
+    if (records.length > 0){
+        minHeight = 130;
+    }else{
+        minHeight = 180;
+    }
 
     return (
         <Box>
@@ -177,7 +198,7 @@ const ApplicationDataTable: React.FunctionComponent<dataTableProp> = ({
                 sortStatus={sortStatus}
                 onSortStatusChange={setSortStatus}
                 // default props
-                minHeight={150}
+                minHeight={minHeight}
                 noRecordsText="No applications to show"
                 withBorder
                 borderRadius="md"
@@ -216,6 +237,7 @@ const ApplicationDataTable: React.FunctionComponent<dataTableProp> = ({
                                         openModal({
                                             title: 'Update Application',
                                             size: 'xl',
+                                            // closeOnClickOutside: false,
                                             children: (
                                                 <UpdateApplication
                                                 application_data={application}
@@ -291,6 +313,7 @@ const ApplicationDataTable: React.FunctionComponent<dataTableProp> = ({
                     return openModal({
                         title: `Document Details`,
                         size: 'lg',
+                        // closeOnClickOutside: false,
                         overlayOpacity: 0.55,
                         overlayBlur: 2,
                         // onClose: () => {

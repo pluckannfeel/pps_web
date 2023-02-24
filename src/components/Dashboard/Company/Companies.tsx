@@ -73,6 +73,7 @@ const Companies: React.FunctionComponent<CompaniesProps> = ({ user }) => {
                 opened={opened}
                 onClose={close}
                 size="xl"
+                closeOnClickOutside={false}
                 overlayColor={
                     theme.colorScheme === 'dark'
                         ? theme.colors.dark[9]

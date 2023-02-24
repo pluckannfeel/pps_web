@@ -151,7 +151,7 @@ const WorkspaceNavbar: React.FunctionComponent<mainNavbarProps> = (props) => {
             <Navbar.Section className={classes.header}>
                 <Group position="apart">
                     <Image src={Logo} width={60} height={60} />
-                    <Code sx={{ fontWeight: 700 }}>v0.1.1</Code>
+                    <Code sx={{ fontWeight: 700 }}>v1.1</Code>
                 </Group>
             </Navbar.Section>
 
