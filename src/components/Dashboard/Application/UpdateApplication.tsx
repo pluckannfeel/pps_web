@@ -118,7 +118,7 @@ const UpdateApplication: React.FunctionComponent<ApplicationFormProps> = ({
     application_data,
     user
 }) => {
-    // console.log(application_data)
+    // console.log(application_data);
 
     const dayJS = dayjs();
 
@@ -281,7 +281,6 @@ const UpdateApplication: React.FunctionComponent<ApplicationFormProps> = ({
     };
 
     const formSubmitHandler = (values: SubmitApplication) => {
-
         const job_positions = [
             {
                 id: GenerateUUID(),
@@ -349,6 +348,7 @@ const UpdateApplication: React.FunctionComponent<ApplicationFormProps> = ({
                         data={application_categories}
                         rightSection={<ChevronDown size={14} />}
                         rightSectionWidth={40}
+                        styles={{ rightSection: { pointerEvents: 'none' } }}
                         {...form.getInputProps('application_type')}
                     />
 
@@ -360,6 +360,7 @@ const UpdateApplication: React.FunctionComponent<ApplicationFormProps> = ({
                         data={document_types}
                         rightSection={<ChevronDown size={14} />}
                         rightSectionWidth={40}
+                        styles={{ rightSection: { pointerEvents: 'none' } }}
                         {...form.getInputProps('employer_category')}
                     />
                 </Group>
@@ -382,6 +383,7 @@ const UpdateApplication: React.FunctionComponent<ApplicationFormProps> = ({
                         data={companyIDName}
                         rightSection={<ChevronDown size={14} />}
                         rightSectionWidth={40}
+                        styles={{ rightSection: { pointerEvents: 'none' } }}
                         // {...form.getInputProps('read_only_company_selected')}
                     />
                 </Group>
@@ -396,7 +398,7 @@ const UpdateApplication: React.FunctionComponent<ApplicationFormProps> = ({
                         {...form.getInputProps('name')}
                         readOnly
                         styles={{
-                            input: classes.readOnlyInput,
+                            input: classes.readOnlyInput
                         }}
                     />
                     <TextInput
@@ -407,7 +409,7 @@ const UpdateApplication: React.FunctionComponent<ApplicationFormProps> = ({
                         {...form.getInputProps('year_established')}
                         readOnly
                         styles={{
-                            input: classes.readOnlyInput,
+                            input: classes.readOnlyInput
                         }}
                     />
                 </Group>
@@ -421,7 +423,7 @@ const UpdateApplication: React.FunctionComponent<ApplicationFormProps> = ({
                         {...form.getInputProps('address')}
                         readOnly
                         styles={{
-                            input: classes.readOnlyInput,
+                            input: classes.readOnlyInput
                         }}
                     />
                     <TextInput
@@ -433,7 +435,7 @@ const UpdateApplication: React.FunctionComponent<ApplicationFormProps> = ({
                         {...form.getInputProps('contact_number')}
                         readOnly
                         styles={{
-                            input: classes.readOnlyInput,
+                            input: classes.readOnlyInput
                         }}
                     />
                 </Group>
@@ -447,7 +449,7 @@ const UpdateApplication: React.FunctionComponent<ApplicationFormProps> = ({
                         {...form.getInputProps('website')}
                         readOnly
                         styles={{
-                            input: classes.readOnlyInput,
+                            input: classes.readOnlyInput
                         }}
                     />
                 </Group>
@@ -461,7 +463,7 @@ const UpdateApplication: React.FunctionComponent<ApplicationFormProps> = ({
                         {...form.getInputProps('registered_industry')}
                         readOnly
                         styles={{
-                            input: classes.readOnlyInput,
+                            input: classes.readOnlyInput
                         }}
                     />
                     <TextInput
@@ -472,7 +474,7 @@ const UpdateApplication: React.FunctionComponent<ApplicationFormProps> = ({
                         {...form.getInputProps('services')}
                         readOnly
                         styles={{
-                            input: classes.readOnlyInput,
+                            input: classes.readOnlyInput
                         }}
                     />
                 </Group>
@@ -492,7 +494,7 @@ const UpdateApplication: React.FunctionComponent<ApplicationFormProps> = ({
                         {...form.getInputProps('contact_person_name')}
                         readOnly
                         styles={{
-                            input: classes.readOnlyInput,
+                            input: classes.readOnlyInput
                         }}
                     />
                     <TextInput
@@ -503,7 +505,7 @@ const UpdateApplication: React.FunctionComponent<ApplicationFormProps> = ({
                         {...form.getInputProps('contact_person_position')}
                         readOnly
                         styles={{
-                            input: classes.readOnlyInput,
+                            input: classes.readOnlyInput
                         }}
                     />
                 </Group>
@@ -518,7 +520,7 @@ const UpdateApplication: React.FunctionComponent<ApplicationFormProps> = ({
                         {...form.getInputProps('contact_person_number')}
                         readOnly
                         styles={{
-                            input: classes.readOnlyInput,
+                            input: classes.readOnlyInput
                         }}
                     />
                     <TextInput
@@ -530,7 +532,7 @@ const UpdateApplication: React.FunctionComponent<ApplicationFormProps> = ({
                         {...form.getInputProps('contact_person_email')}
                         readOnly
                         styles={{
-                            input: classes.readOnlyInput,
+                            input: classes.readOnlyInput
                         }}
                     />
                 </Group>
@@ -550,7 +552,7 @@ const UpdateApplication: React.FunctionComponent<ApplicationFormProps> = ({
                         {...form.getInputProps('rep_name')}
                         readOnly
                         styles={{
-                            input: classes.readOnlyInput,
+                            input: classes.readOnlyInput
                         }}
                     />
                     <TextInput
@@ -561,7 +563,7 @@ const UpdateApplication: React.FunctionComponent<ApplicationFormProps> = ({
                         {...form.getInputProps('rep_position')}
                         readOnly
                         styles={{
-                            input: classes.readOnlyInput,
+                            input: classes.readOnlyInput
                         }}
                     />
                 </Group>

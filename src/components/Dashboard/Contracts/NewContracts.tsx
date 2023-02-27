@@ -25,92 +25,24 @@ import {
     Company,
     fetchRequestCompanies
 } from '../../../redux/features/companySlice';
-import { fetchRequestContracts } from '../../../redux/features/contractSlice';
+import {
+    Contract,
+    fetchRequestContracts
+} from '../../../redux/features/contractSlice';
 import CustomLoadOverlay from '../../ui/LoadOverlay';
 import { showNotification } from '@mantine/notifications';
 import { CheckIcon, Cross1Icon } from '@radix-ui/react-icons';
-
-const contract_terms = [
-    { value: 'renew', label: 'The contract shall be automatically renewed.' },
-    { value: 'non_renew', label: 'The contract is not renewable/fixed.' },
-    {
-        value: 'renew_by_performance',
-        label: `Renewal of contract shall be determined by volume of work to be done at the time the term of
-    the contract expires, worker’s work record and work attitude, worker’s capability, business
-    performance of the company.`
-    }
-];
-
-export const work_bonus_salary_increase = [
-    { value: 'once', label: 'Once a Year' },
-    { value: 'twice', label: 'Twice a Year' },
-    { value: 'performance', label: 'Based on Company/worker performance' }
-];
-
-const jlpt_level = ['N5', 'N4', 'N3', 'N2', 'N1'];
-
-const min_year_exp = ['1', '2', '3', '4', '5'];
-
-const work_days = [
-    'Monday to Friday',
-    'Monday to Saturday',
-    'Tuesday to Saturday',
-    'Wednesday to Sunday',
-    'Friday to Wednesday'
-];
-
-const days_off = [
-    'Saturday and Sunday',
-    'Sunday and Monday',
-    'Monday and Tuesday',
-    'Tuesday and Wednesday',
-    'Wednesday and Thursday',
-    'Thursday and Friday',
-    'Friday and Saturday'
-];
-
-export type Contract = {
-    id: string;
-    company_id: string;
-    company_name: string;
-    company_address: string;
-    company_contact_number: string;
-    worker_name: string;
-    agency_name: string;
-    agency_address: string;
-    agency_rep_name: string;
-    agency_rep_position: string;
-    site_employment: string;
-    contract_duration: string; // <num> <year(s)>
-    contract_terms: string; // choose option but will be 'x' on pdf
-    bonus: string; // once,twice,byperformance
-    salary_increase: string; // once,twice,byperformance
-    work_start_time: Date; // 9:00 AM
-    work_end_time: Date; // 5:00 PM
-    work_rest: number;
-    work_working_days: string; // Tuesday to Saturday
-    work_days_off: string; // Sunday & Monday
-    work_leave: number; // 15
-    work_other_leave: string;
-    job_title: string;
-    job_description: string;
-    job_duties: string; // list/object string;
-    job_criteria_degree: string;
-    job_criteria_jlpt_level: string;
-    job_criteria_year_exp: string;
-    job_criteria_other: string;
-    job_basic_salary: string;
-    job_total_deductions: string;
-    job_income_tax: string;
-    job_social_insurance: string;
-    job_utilities: string;
-    job_accomodation: string;
-    job_net_salary: string;
-    housing_accomodation: string;
-    accomodation_utilities: string;
-    transportation: string;
-    other_benefits: string; // object e.g key : benefit name value: benefit value or contents
-};
+import {
+    contract_terms,
+    days_off,
+    housing_accomodation,
+    jlpt_level,
+    min_year_exp,
+    utilities,
+    work_bonus_salary_increase,
+    work_days
+} from './ContractOptions';
+import { isObjectEmpty } from '../../helpers/Generals';
 
 type NewContractProps = {
     user?: string | null;
@@ -152,7 +84,7 @@ const NewContracts: React.FunctionComponent<NewContractProps> = ({
     }
 
     const dispatch = useAppDispatch();
-    const companySuccessMessage = useAppSelector(
+    const contractSuccessMessage = useAppSelector(
         (state) => state.company.success
     );
 
@@ -167,29 +99,32 @@ const NewContracts: React.FunctionComponent<NewContractProps> = ({
             company_id: '',
             company_name: '',
             company_address: '',
-            company_contact_number: '',
+            company_contact_number: 0,
             agency_name: '',
             agency_rep_name: '',
             agency_rep_position: '',
             agency_address: '',
             site_employment: '',
-            contract_duration: '', // <num> <year(s)>
-            contract_terms: contract_terms[0].value, // choose option but will be 'x' on pdf
-            bonus: work_bonus_salary_increase[0].value, // once,twice,byperformance
+            contract_duration: '1',
+            contract_terms: contract_terms[0].value,
+            bonus: work_bonus_salary_increase[0].value,
             salary_increase: work_bonus_salary_increase[0].value, // once,twice,byperformance
-            work_start_time: new Date(dayJS8am.format('YYYY-MM-DD HH:mm:ss')), // 9:00 AM
-            work_end_time: new Date(dayJS5pm.format('YYYY-MM-DD HH:mm:ss')), // 5:00 PM
+            work_start_time: '8:00 AM', // 9:00 AM
+            work_end_time: '5:00 PM', // 5:00 PM
             work_rest: 60,
             work_working_days: work_days[0], // Tuesday to Saturday
             work_days_off: days_off[0], // Sunday & Monday
             work_leave: 0, // 15
             work_other_leave: '',
+            utilities: utilities[0].value,
+            housing_accomodation: housing_accomodation[1].value,
+            housing_cost: 0,
             job_title: '',
             job_description: '',
             job_duties: '', // list/object '',
             job_criteria_degree: '',
             job_criteria_jlpt_level: jlpt_level[0],
-            job_criteria_year_exp: min_year_exp[0].toString(),
+            job_criteria_year_exp: min_year_exp[0],
             job_criteria_other: '',
             job_basic_salary: '',
             job_total_deductions: '',
@@ -198,17 +133,15 @@ const NewContracts: React.FunctionComponent<NewContractProps> = ({
             job_utilities: '',
             job_accomodation: '',
             job_net_salary: '',
-            housing_accomodation: '',
-            accomodation_utilities: '',
-            transportation: '',
-            other_benefits: '' // object e.g key : benefit name value: benefit value or contents
+            benefits_housing: '',
+            benefits_utilities: '',
+            benefits_transportation: '',
+            benefits_other: ''
         },
         validate: (values: Contract) => ({
-            other_benefits: !values.other_benefits.includes(';')
+            benefits_other: values.benefits_other.includes(';')
                 ? 'Error processing other benefits field.'
                 : null
-            // application_type: values.application_type !== '' ? null : 'Please choose an application type.',
-            // employer_category: values.employer_category !== '' ? null : 'Please choose an employer category.',
         })
     });
 
@@ -228,6 +161,7 @@ const NewContracts: React.FunctionComponent<NewContractProps> = ({
             (company: Company) => company.id === value
         );
 
+
         setSelectedCompany(selectedCompanyObject!);
 
         // set the form values to the selected company object
@@ -235,12 +169,32 @@ const NewContracts: React.FunctionComponent<NewContractProps> = ({
             company_id: selectedCompanyObject!.id,
             company_name: selectedCompanyObject!.name,
             company_address: selectedCompanyObject!.address,
-            company_contact_number:
-                selectedCompanyObject!.contact_number.toString()
+            company_contact_number: selectedCompanyObject!.contact_number
         });
     };
 
-    const formSubmitHandler = (values: Contract) => {
+    const contractLoading = useAppSelector((state) => state.contract.loading);
+    const contractError = useAppSelector((state) => state.contract.error);
+
+    const formSubmitHandler = (values: any) => {
+        // console.log(values);
+        // console.log(selectedCompany);
+
+        if (isObjectEmpty(selectedCompany)) {
+            console.log('no_company selected')
+            // closeModal();
+            showNotification({
+                id: 'add-contract-error',
+                title: 'No company selected.',
+                message: 'Please choose a company.',
+                color: 'red',
+                autoClose: 5000,
+                icon: <Cross1Icon />
+            });
+
+            return;
+        }
+
         const passData = {
             user: user,
             company_id: values.company_id,
@@ -254,8 +208,8 @@ const NewContracts: React.FunctionComponent<NewContractProps> = ({
             contract_terms: values.contract_terms,
             bonus: values.bonus,
             salary_increase: values.salary_increase,
-            work_start_time: values.work_start_time.toString(), // changed as string in backend
-            work_end_time: values.work_end_time.toString(), // changed as string in backend
+            work_start_time: values.work_start_time,
+            work_end_time: values.work_end_time,
             work_rest: values.work_rest,
             work_working_days: values.work_working_days,
             work_days_off: values.work_days_off,
@@ -264,13 +218,19 @@ const NewContracts: React.FunctionComponent<NewContractProps> = ({
                 values.work_other_leave === ''
                     ? 'null'
                     : values.work_other_leave,
+            utilities: values.utilities,
+            housing_accomodation: values.housing_accomodation,
+            housing_cost: values.housing_cost,
             job_title: values.job_title,
             job_description: values.job_description,
             job_duties: values.job_duties,
             job_criteria_degree: values.job_criteria_degree,
             job_criteria_jlpt_level: values.job_criteria_jlpt_level,
             job_criteria_year_exp: values.job_criteria_year_exp,
-            job_criteria_other: values.job_criteria_other,
+            job_criteria_other:
+                values.job_criteria_other === ''
+                    ? 'null'
+                    : values.job_criteria_other,
             job_basic_salary: values.job_basic_salary,
             job_total_deductions: values.job_total_deductions,
             job_income_tax: values.job_income_tax,
@@ -278,11 +238,11 @@ const NewContracts: React.FunctionComponent<NewContractProps> = ({
             job_utilities: values.job_utilities,
             job_accomodation: values.job_accomodation,
             job_net_salary: values.job_net_salary,
-            housing_accomodation: values.housing_accomodation,
-            accomodation_utilities: values.accomodation_utilities,
-            transportation: values.transportation,
-            other_benefits:
-                values.other_benefits === '' ? 'null' : values.other_benefits
+            benefits_housing: values.benefits_housing,
+            benefits_utilities: values.benefits_utilities,
+            benefits_transportation: values.benefits_transportation,
+            benefits_other:
+                values.benefits_other === '' ? 'null' : values.benefits_other
         };
 
         dispatch(
@@ -295,7 +255,7 @@ const NewContracts: React.FunctionComponent<NewContractProps> = ({
 
         // console.log(passData);
 
-        // closeModal();
+        closeModal();
 
         if (contractLoading) {
             showNotification({
@@ -308,11 +268,11 @@ const NewContracts: React.FunctionComponent<NewContractProps> = ({
             });
         }
 
-        if (companySuccessMessage && !contractError) {
+        if (contractSuccessMessage && !contractError) {
             showNotification({
                 id: 'add-contract-success',
                 title: 'Added Contract.',
-                message: companySuccessMessage,
+                message: contractSuccessMessage,
                 color: 'teal',
                 autoClose: 5000,
                 icon: <CheckIcon />
@@ -320,14 +280,10 @@ const NewContracts: React.FunctionComponent<NewContractProps> = ({
         }
     };
 
-    const contractLoading = useAppSelector((state) => state.contract.loading);
-    const contractError = useAppSelector((state) => state.contract.error);
-
     return (
         <>
             {companyLoading && contractLoading && <CustomLoadOverlay />}
             <form onSubmit={form.onSubmit(formSubmitHandler)}>
-                {/* <form> */}
                 <Group position="center" mb={15}>
                     <Text sx={sectionTitleStyleProp}>
                         New Employment Contract
@@ -340,7 +296,7 @@ const NewContracts: React.FunctionComponent<NewContractProps> = ({
                         required
                         label="Worker's Name"
                         {...form.getInputProps('worker_name')}
-                        type='text'
+                        type="text"
                     />
                 </Group>
 
@@ -349,13 +305,15 @@ const NewContracts: React.FunctionComponent<NewContractProps> = ({
                         Select Company
                     </Text>
                     <Select
+                        allowDeselect
                         // label="Company Name"
-                        required
                         placeholder="Company Name"
                         onChange={selectedCompanyHandler}
                         data={companyIDName}
                         rightSection={<ChevronDown size={14} />}
+                        styles={{ rightSection: { pointerEvents: 'none' } }}
                         rightSectionWidth={40}
+                        // {...form.}
                     />
                 </Group>
 
@@ -464,7 +422,7 @@ const NewContracts: React.FunctionComponent<NewContractProps> = ({
                         withAsterisk
                         required
                         label="Contract Duration/Term of Employment"
-                        type="text"
+                        type="number"
                         placeholder="in years (1, 2)"
                         // onInput={praNameHandler}
                         {...form.getInputProps('contract_duration')}
@@ -478,6 +436,7 @@ const NewContracts: React.FunctionComponent<NewContractProps> = ({
                         data={contract_terms}
                         rightSection={<ChevronDown size={14} />}
                         rightSectionWidth={40}
+                        styles={{ rightSection: { pointerEvents: 'none' } }}
                         {...form.getInputProps('contract_terms')}
                     />
                 </Group>
@@ -491,6 +450,7 @@ const NewContracts: React.FunctionComponent<NewContractProps> = ({
                         data={work_bonus_salary_increase}
                         rightSection={<ChevronDown size={14} />}
                         rightSectionWidth={40}
+                        styles={{ rightSection: { pointerEvents: 'none' } }}
                         {...form.getInputProps('bonus')}
                     />
 
@@ -513,7 +473,7 @@ const NewContracts: React.FunctionComponent<NewContractProps> = ({
                 </Group>
 
                 <Group position="center" mt={10} grow>
-                    <TimeInput
+                    {/* <TimeInput
                         required
                         label="Start Time"
                         placeholder="Pick time"
@@ -533,6 +493,26 @@ const NewContracts: React.FunctionComponent<NewContractProps> = ({
                         // defaultValue={
                         //     new Date(dayJS5pm.format('YYYY-MM-DD HH:mm:ss'))
                         // }
+                        {...form.getInputProps('work_end_time')}
+                    /> */}
+
+                    <TextInput
+                        withAsterisk
+                        required
+                        type="text"
+                        label="Start Time"
+                        placeholder="0:00 AM/PM"
+                        icon={<Clock size={16} />}
+                        {...form.getInputProps('work_start_time')}
+                    />
+
+                    <TextInput
+                        withAsterisk
+                        required
+                        type="text"
+                        label="End Time"
+                        placeholder="0:00 AM/PM"
+                        icon={<Clock size={16} />}
                         {...form.getInputProps('work_end_time')}
                     />
                 </Group>
@@ -582,7 +562,7 @@ const NewContracts: React.FunctionComponent<NewContractProps> = ({
                         required
                         label="Vacation/Sick Leave"
                         placeholder="e.g 10 days, 15 days"
-                        type="text"
+                        type="number"
                         {...form.getInputProps('work_leave')}
                     />
 
@@ -593,6 +573,47 @@ const NewContracts: React.FunctionComponent<NewContractProps> = ({
                         placeholder="Optional"
                         type="text"
                         {...form.getInputProps('work_other_leave')}
+                    />
+                </Group>
+
+                <Group position="center" mt={10} grow>
+                    <Text size="lg" weight="bolder">
+                        Utility (Electricity/Water/Gas), Subsidized
+                        Housing/Accomodation
+                    </Text>
+                </Group>
+
+                <Group position="center" mt={10} grow>
+                    <Select
+                        required
+                        withAsterisk
+                        label="Utility Option "
+                        // placeholder="Labor and Employment faciliation services"
+                        data={utilities}
+                        rightSection={<ChevronDown size={14} />}
+                        rightSectionWidth={40}
+                        {...form.getInputProps('utilities')}
+                    />
+
+                    <Select
+                        required
+                        withAsterisk
+                        label="Housing Option"
+                        // placeholder="Labor and Employment faciliation services"
+                        data={housing_accomodation}
+                        rightSection={<ChevronDown size={14} />}
+                        rightSectionWidth={40}
+                        styles={{ rightSection: { pointerEvents: 'none' } }}
+                        {...form.getInputProps('housing_accomodation')}
+                    />
+
+                    <TextInput
+                        withAsterisk
+                        required
+                        label="Housing Cost"
+                        // placeholder="0"
+                        type="number"
+                        {...form.getInputProps('housing_cost')}
                     />
                 </Group>
 
@@ -617,6 +638,7 @@ const NewContracts: React.FunctionComponent<NewContractProps> = ({
                         required
                         label="Job Description"
                         type="text"
+                        // maxLength={260}
                         {...form.getInputProps('job_description')}
                         minRows={3}
                     />
@@ -626,6 +648,7 @@ const NewContracts: React.FunctionComponent<NewContractProps> = ({
                         withAsterisk
                         required
                         label="Job Duties"
+                        // maxLength={900}
                         placeholder="use ';' to split each duties."
                         type="text"
                         minRows={4}
@@ -688,7 +711,7 @@ const NewContracts: React.FunctionComponent<NewContractProps> = ({
                         required
                         label="Basic Monthly Salary"
                         placeholder="(in Yen) 250,000.00 "
-                        type="text"
+                        type="number"
                         {...form.getInputProps('job_basic_salary')}
                     />
 
@@ -697,7 +720,7 @@ const NewContracts: React.FunctionComponent<NewContractProps> = ({
                         required
                         placeholder="(in Yen) 215,000.00 "
                         label="Net Salary"
-                        type="text"
+                        type="number"
                         {...form.getInputProps('job_net_salary')}
                     />
 
@@ -706,7 +729,7 @@ const NewContracts: React.FunctionComponent<NewContractProps> = ({
                         required
                         placeholder="(in Yen) 35,000.00 "
                         label="Total Deduction"
-                        type="text"
+                        type="number"
                         {...form.getInputProps('job_total_deductions')}
                     />
                 </Group>
@@ -719,7 +742,7 @@ const NewContracts: React.FunctionComponent<NewContractProps> = ({
                         required
                         label="Income Tax"
                         placeholder="(in Yen) 4,000.00 "
-                        type="text"
+                        type="number"
                         {...form.getInputProps('job_income_tax')}
                     />
 
@@ -727,7 +750,7 @@ const NewContracts: React.FunctionComponent<NewContractProps> = ({
                         withAsterisk
                         required
                         label="Social Insurance"
-                        type="text"
+                        type="number"
                         placeholder="(in yen) 35,000.00 "
                         {...form.getInputProps('job_social_insurance')}
                     />
@@ -736,14 +759,14 @@ const NewContracts: React.FunctionComponent<NewContractProps> = ({
                 <Group position="center" my={5} grow>
                     <TextInput
                         label="Housing/Accomodation"
-                        type="text"
+                        type="number"
                         placeholder="Optional"
                         {...form.getInputProps('job_accomodation')}
                     />
 
                     <TextInput
                         label="Utility"
-                        type="text"
+                        type="number"
                         placeholder="Optional"
                         {...form.getInputProps('job_utilities')}
                     />
@@ -755,25 +778,25 @@ const NewContracts: React.FunctionComponent<NewContractProps> = ({
                     <TextInput
                         withAsterisk
                         label="Housing/Accomodation"
-                        type="text"
+                        type="number"
                         placeholder="(in yen) e.g 40,000.00"
-                        {...form.getInputProps('housing_accomodation')}
+                        {...form.getInputProps('benefits_housing')}
                     />
 
                     <TextInput
                         withAsterisk
                         label="Accomodation Utilities"
                         placeholder="(in yen) e.g 30,000.00"
-                        type="text"
-                        {...form.getInputProps('accomodation_utilities')}
+                        type="number"
+                        {...form.getInputProps('benefits_utilities')}
                     />
 
                     <TextInput
                         withAsterisk
                         label="Commutation/Transportation"
                         placeholder="(in yen) e.g 10,000.00"
-                        type="text"
-                        {...form.getInputProps('transportation')}
+                        type="number"
+                        {...form.getInputProps('benefits_transportation')}
                     />
                 </Group>
 
@@ -782,7 +805,7 @@ const NewContracts: React.FunctionComponent<NewContractProps> = ({
                         label="Other Benefits"
                         placeholder="(optional) use ; to split other benefits"
                         type="text"
-                        {...form.getInputProps('other_benefits')}
+                        {...form.getInputProps('benefits_other')}
                         // defaultValue=""
                     />
                 </Group>
@@ -790,13 +813,14 @@ const NewContracts: React.FunctionComponent<NewContractProps> = ({
                 <Group mt={30} position="center">
                     <Button
                         fullWidth
+                        disabled={!form.isDirty()}
                         size="md"
                         variant="gradient"
                         gradient={{ from: 'orange', to: 'red' }}
                         type="submit"
                     >
                         {/* {langSetup.registerButton} */}
-                        Create Employment Contract
+                        Create Contract
                     </Button>
                 </Group>
             </form>

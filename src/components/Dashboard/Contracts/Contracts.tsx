@@ -29,6 +29,7 @@ import { useAppDispatch, useAppSelector } from '../../../redux/app/rtk-hooks';
 import { fetchRequestContracts } from '../../../redux/features/contractSlice';
 import { sortBy } from 'lodash';
 import { openConfirmModal, openModal } from '@mantine/modals';
+import UpdateContract from './UpdateContract';
 // import NewApplication from './NewApplication';
 
 // import { useStyles } from './Application';
@@ -43,14 +44,13 @@ const Contracts: React.FunctionComponent<ContractsProps> = ({ user }) => {
 
     const passData = {
         user: user
-    }
+    };
 
     const dispatch = useAppDispatch();
 
-    const {loading, error} = useAppSelector((state) => state.contract)
+    const { loading, error } = useAppSelector((state) => state.contract);
 
     useEffect(() => {
-
         dispatch(
             fetchRequestContracts({
                 url: 'http://localhost:8000/contracts/contract_list',
@@ -94,7 +94,7 @@ const Contracts: React.FunctionComponent<ContractsProps> = ({ user }) => {
             </Grid>
 
             <Divider my={20} />
-            
+
             {!loading && error ? <Text>Error Loading data table.</Text> : null}
             {!loading && !error && <ContractDataTable user={user} />}
         </>
@@ -133,7 +133,7 @@ const ContractDataTable: React.FunctionComponent<dataTableProp> = ({
         const to = from + PAGE_SIZE;
         const new_record = data.slice(from, to);
 
-        console.log(new_record)
+        // console.log(new_record);
 
         const sortData = sortBy(new_record, sortStatus.columnAccessor);
 
@@ -146,8 +146,8 @@ const ContractDataTable: React.FunctionComponent<dataTableProp> = ({
     const deleteContract = (id: string) => {
         const passData = {
             user,
-            id,
-        }
+            id
+        };
 
         dispatch(
             fetchRequestContracts({
@@ -155,8 +155,8 @@ const ContractDataTable: React.FunctionComponent<dataTableProp> = ({
                 method: 'DELETE',
                 body: passData
             })
-        )
-    }
+        );
+    };
 
     return (
         <Box>
@@ -168,7 +168,7 @@ const ContractDataTable: React.FunctionComponent<dataTableProp> = ({
                 page={page}
                 onPageChange={(p) => setPage(p)}
                 fetching={fetching}
-                loaderVariant='dots'
+                loaderVariant="dots"
                 sortStatus={sortStatus}
                 onSortStatusChange={setSortStatus}
                 minHeight={180}
@@ -190,11 +190,11 @@ const ContractDataTable: React.FunctionComponent<dataTableProp> = ({
                                     onClick={(e: React.MouseEvent) => {
                                         e.stopPropagation();
 
-                                        // downloadPDF(application.id);
-                                        // window.open(
-                                        //     'http://localhost:8000/applications/generate?application_id=' +
-                                        //     contract.id
-                                        // );
+                                        // downloadPDF(contract.id);
+                                        window.open(
+                                            'http://localhost:8000/contracts/generate?contract_id=' +
+                                            contract.id
+                                        );
                                     }}
                                 >
                                     <Download size={16} />
@@ -209,12 +209,12 @@ const ContractDataTable: React.FunctionComponent<dataTableProp> = ({
                                             title: 'Update Contract',
                                             size: 'xl',
                                             // closeOnClickOutside: false,
-                                            // children: (
-                                            //     // <UpdateApplication
-                                            //     // application_data={application}
-                                            //     //     user={user}
-                                            //     // />
-                                            // )
+                                            children: (
+                                                <UpdateContract
+                                                    contract_data={contract}
+                                                    user={user}
+                                                />
+                                            )
                                         });
                                     }}
                                 >
@@ -229,7 +229,7 @@ const ContractDataTable: React.FunctionComponent<dataTableProp> = ({
                                             title: `Are you sure you want to delete this contract?`,
                                             children: <></>,
                                             onConfirm: () => {
-                                                deleteContract(contract.id)
+                                                deleteContract(contract.id);
                                             },
                                             labels: {
                                                 confirm: 'Yes',
@@ -292,7 +292,7 @@ const ContractDataTable: React.FunctionComponent<dataTableProp> = ({
                         overlayBlur: 2,
                         children: (
                             <>
-                            <Stack>
+                                <Stack>
                                     <Group position="left">
                                         <Text
                                             className={classes.modalLabel}
@@ -318,7 +318,6 @@ const ContractDataTable: React.FunctionComponent<dataTableProp> = ({
                                             {contract.worker_name}
                                         </Text>
                                     </Group>
-
 
                                     <Divider mt={5} />
 
@@ -406,12 +405,11 @@ const ContractDataTable: React.FunctionComponent<dataTableProp> = ({
                                 </Stack>
                             </>
                         )
-                    })
+                    });
                 }}
-                
             />
         </Box>
-    )
+    );
 };
 
 export default Contracts;

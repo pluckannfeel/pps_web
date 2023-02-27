@@ -208,7 +208,7 @@ const NewApplication: React.FunctionComponent<NewApplicationProps> = ({
             job_no_workers2: 0,
             job_basic_salary1: 0,
             job_basic_salary2: 0,
-            visa_type: ''
+            visa_type: professional_type_visas[0]
         },
         validate: (values: Application) => (
             {
@@ -378,6 +378,7 @@ const NewApplication: React.FunctionComponent<NewApplicationProps> = ({
                         data={application_categories}
                         rightSection={<ChevronDown size={14} />}
                         rightSectionWidth={40}
+                        styles={{ rightSection: { pointerEvents: 'none' } }}
                         {...form.getInputProps('application_type')}
                     />
 
@@ -389,6 +390,7 @@ const NewApplication: React.FunctionComponent<NewApplicationProps> = ({
                         data={document_types}
                         rightSection={<ChevronDown size={14} />}
                         rightSectionWidth={40}
+                        styles={{ rightSection: { pointerEvents: 'none' } }}
                         {...form.getInputProps('employer_category')}
                     />
                 </Group>

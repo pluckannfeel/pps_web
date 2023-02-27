@@ -7,21 +7,21 @@ export type Contract = {
     // company info
     company_id: string; //id
     company_contact_number: number;
-    company_contact_person_email: string;
-    company_contact_person_name: string;
-    company_contact_person_number: number;
-    company_contact_person_position: string;
-    company_foreign_workers: number;
+    // company_contact_person_email: string;
+    // company_contact_person_name: string;
+    // company_contact_person_number: number;
+    // company_contact_person_position: string;
+    // company_foreign_workers: number;
     company_name: string;
     company_address: string;
-    company_parttime_workers: number;
-    company_registered_industry: string;
-    company_regular_worker: number;
-    company_rep_name: string;
-    company_rep_position: string;
-    company_services: string;
-    company_website: string;
-    company_year_established: string;
+    // company_parttime_workers: number;
+    // company_registered_industry: string;
+    // company_regular_worker: number;
+    // company_rep_name: string;
+    // company_rep_position: string;
+    // company_services: string;
+    // company_website: string;
+    // company_year_established: string;
     job_criteria_degree: string;
     job_criteria_jlpt_level: string;
     job_criteria_year_exp: string;
@@ -43,6 +43,9 @@ export type Contract = {
     work_days_off: string; // Sunday & Monday
     work_leave: number // 15
     work_other_leave: string;
+    utilities: string;
+    housing_accomodation: string;
+    housing_cost: number;
     job_title: string;
     job_description: string;
     job_duties: string; // list/object string;
@@ -53,10 +56,10 @@ export type Contract = {
     job_accomodation: string;
     job_utilities: string;
     job_net_salary: string;
-    housing_accomodation: string;
-    accomodation_utilities: string;
-    transportation: string;
-    other_benefits: string; // object e.g key : benefit name value: benefit value or contents
+    benefits_housing: string;
+    benefits_utilities: string;
+    benefits_transportation: string;
+    benefits_other: string; // object e.g key : benefit name value: benefit value or contents
 }
 
 type InitialState = {

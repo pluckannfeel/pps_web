@@ -135,6 +135,7 @@ const ApplicationDataTable: React.FunctionComponent<dataTableProp> = ({
 
     const { classes } = useStyles();
 
+
     useEffect(() => {
         const from = (page - 1) * PAGE_SIZE;
         const to = from + PAGE_SIZE;
