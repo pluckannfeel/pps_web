@@ -72,7 +72,7 @@ const initialState: InitialState = {
 };
 
 export const fetchRequestApplications = createAsyncThunk(
-    'company/fetchRequestApplications',
+    'application/fetchRequestApplications',
     async (requestConfig: requestConfigProps) => {
         // return await axios
         //     .post(requestConfig.url, requestConfig.body)
@@ -117,7 +117,7 @@ const applicationSlice = createSlice({
                 }
                 // add or update company
                 else if ('new_data' in action.payload) {
-                    // if the new data exists, then we update the company instead
+                    // if the new data exists, then we update the application array instead
                     const new_application = action.payload['new_data'];
                     const app_id = new_application['id'];
 

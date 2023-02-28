@@ -17,27 +17,30 @@ import useHttpRequest from '../../hooks/use-httprequest';
 import useFileHttpRequest from '../../hooks/use-httpfilerequest';
 import { ButtonProgress } from '../../ui/ButtonWithLoadingProgress';
 import axios from 'axios';
-import { Sleep } from '../../helpers/Generals';
+
+// redux
+import { useAppDispatch, useAppSelector } from '../../../redux/app/rtk-hooks';
+import { useDispatch } from 'react-redux';
+import { fetchRequestProfileInfo } from '../../../redux/features/profileSlice';
+import { closeAllModals, closeModal } from '@mantine/modals';
 
 interface UploadPhotoModalProps {
     user: string;
-    open: boolean;
-    onClose: () => void;
+    closeModal: () => void;
 }
 
 type userUploadPhotoType = {
     file: File;
 };
 
-export const UploadPhotoModal: React.FC<UploadPhotoModalProps> = ({
-    user,
-    open,
-    onClose
-}) => {
-    const theme = useMantineTheme();
+export const UploadPhotoModal: React.FC<UploadPhotoModalProps> = ({ user, closeModal }) => {
+    // redux
+    const dispatch = useAppDispatch();
+
+    const { loading, error } = useAppSelector((state) => state.profile);
 
     const [file, setFile] = useState<File | null>(null);
-    const refFile = useRef<File>(null);
+    // const refFile = useRef<File>(null);
     const [preview, setPreview] = useState<string | null>(null);
 
     // button progress
@@ -79,35 +82,23 @@ export const UploadPhotoModal: React.FC<UploadPhotoModalProps> = ({
     //   ? setLoaded(false)
     //   : !interval.active && interval.start();
 
-    const {
-        loading,
-        error,
-        sendRequest: uploadUserPhoto
-    } = useFileHttpRequest();
+    // const {
+    //     loading,
+    //     error,
+    //     sendRequest: uploadUserPhoto
+    // } = useFileHttpRequest();
 
     return (
-        <Modal
-            title="New Photo"
-            opened={open}
-            onClose={onClose}
-            size="md"
-            overlayColor={
-                theme.colorScheme === 'dark'
-                    ? theme.colors.dark[9]
-                    : theme.colors.gray[2]
-            }
-            overlayOpacity={0.55}
-            overlayBlur={3}
-        >
+        <>
             <Paper my="md">
                 <FileInput
                     icon={<Upload size={16} />}
                     label="Upload Photo"
                     placeholder="your photo"
                     onChange={(file) => {
-                        setFile(file)
+                        setFile(file);
 
-                        setLoaded(false)
+                        setLoaded(false);
                     }}
                 />
             </Paper>
@@ -126,30 +117,51 @@ export const UploadPhotoModal: React.FC<UploadPhotoModalProps> = ({
                         let formData = new FormData();
                         if (file) {
                             formData.append('file', file);
-                            uploadUserPhoto(
-                                {
-                                    url:
-                                        'http://localhost:8000/users/user_add_img?user=' +
-                                        user,
-                                    // 'http://localhost:8000/users/user_add_img',
-                                    // method: 'POST', removed method as file must be always post
+                            // uploadUserPhoto(
+                            //     {
+                            //         url:
+                            //             'http://localhost:8000/users/user_add_img?user=' +
+                            //             user,
+                            //         // 'http://localhost:8000/users/user_add_img',
+                            //         // method: 'POST', removed method as file must be always post
+                            //         body: formData
+                            //     },
+                            //     (data) => {
+                            //         // console.log(data);
+                            //         showNotification({
+                            //             id: 'photo-uploaded',
+                            //             title: 'Successfully Uploaded.',
+                            //             message: 'User Photo saved.',
+                            //             color: 'green',
+                            //             autoClose: 5000,
+                            //             icon: <CheckIcon />
+                            //         });
+
+                            //         // decide if u want to auto close it once done uploading
+                            //     }
+                            // );
+
+                            dispatch(
+                                fetchRequestProfileInfo({
+                                    url: `http://localhost:8000/users/user_add_img?user=${user}`,
+                                    method: 'POST',
                                     body: formData
-                                },
-                                (data) => {
-                                    // console.log(data);
-                                    showNotification({
-                                        id: 'photo-uploaded',
-                                        title: 'Successfully Uploaded.',
-                                        message: 'User Photo saved.',
-                                        color: 'green',
-                                        autoClose: 5000,
-                                        icon: <CheckIcon />
-                                    });
-                                    
-                                    // decide if u want to auto close it once done uploading
-                                }
+                                })
                             );
+
+                            if (!loading) {
+                                showNotification({
+                                    id: 'photo-uploaded',
+                                    title: 'Successfully Uploaded.',
+                                    message: 'User Photo saved.',
+                                    color: 'green',
+                                    autoClose: 5000,
+                                    icon: <CheckIcon />
+                                });
+                            }
                         }
+
+                        closeModal();
 
                         if (error) {
                             console.log(error);
@@ -168,6 +180,6 @@ export const UploadPhotoModal: React.FC<UploadPhotoModalProps> = ({
                     progress={progress}
                 />
             </Group>
-        </Modal>
+        </>
     );
 };

@@ -91,7 +91,7 @@ const initialState: InitialState = {
 };
 
 export const fetchRequestContracts = createAsyncThunk(
-    'company/fetchRequestContracts',
+    'contract/fetchRequestContracts',
     async (requestConfig: requestConfigProps) => {
         // return await axios
         //     .post(requestConfig.url, requestConfig.body)

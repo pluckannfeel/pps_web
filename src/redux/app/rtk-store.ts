@@ -2,6 +2,7 @@ import {configureStore} from '@reduxjs/toolkit'
 import companyReducer from '../features/companySlice'
 import applicationReducer from '../features/applicationSlice'
 import contractReducer from '../features/contractSlice'
+import profileReducer from '../features/profileSlice'
 
 const rtk_store = configureStore({
     reducer: {
@@ -9,6 +10,7 @@ const rtk_store = configureStore({
         company: companyReducer,
         application: applicationReducer,
         contract: contractReducer,
+        profile: profileReducer,
     }
 })
 

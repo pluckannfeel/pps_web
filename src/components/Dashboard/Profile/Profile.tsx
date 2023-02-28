@@ -9,7 +9,9 @@ import {
     Group,
     Menu,
     CSSObject,
-    Paper
+    Paper,
+    Modal,
+    useMantineTheme
 } from '@mantine/core';
 import {
     At,
@@ -33,70 +35,80 @@ import { sectionTitleStyleProp } from '../../helpers/CssHelpers';
 import ProfileForm from './ProfileForm';
 import { ClassNames } from '@emotion/react';
 import { ButtonMenu } from '../../ui/buttonMenu';
-import { useHover } from '@mantine/hooks';
+import { useDisclosure, useHover } from '@mantine/hooks';
 import { UploadPhotoModal } from './ProfileUploadPhotoModal';
+import { useAppDispatch, useAppSelector } from '../../../redux/app/rtk-hooks';
+import { fetchRequestProfileInfo } from '../../../redux/features/profileSlice';
+import CustomLoadOverlay from '../../ui/LoadOverlay';
 
 type profileProps = {
     user?: string | null;
 };
 
-interface UserInfoIconsProps {
-    avatar: string;
-    name: string;
-    phone: string;
+type UserProps = {
+    first_name: string;
+    last_name: string;
+    birth_date: Date | null;
+    username: string;
     email: string;
-}
+    phone: string;
+    img_url: string;
+    is_verified: boolean;
+};
+
+type userInfoProps = {
+    profileInfo: UserProps;
+};
 
 // const userChangePhotoMenuData = [
 //     { label: 'upload_new', desc: 'Upload New Photo', image: 'PhotoPlus' },
 //     { label: 'gallery', desc: 'Recent Photos', image: 'Photo' }
 // ]
 
-const UserInfoIcons: React.FC<UserInfoIconsProps> = ({
-    avatar,
-    name,
-    phone,
-    email
-}) => {
-    const [changeUserPhotoItem, setChangeUserPhotoItem] = useState<
-        string | null
-    >(null);
-
-    // modal open and close state
-    const [modalOpen, setModalOpen] = useState(false);
+const UserInfoIcons: React.FC<userInfoProps> = ({ profileInfo }) => {
+    const theme = useMantineTheme();
+    const [opened, { close, open }] = useDisclosure(false);
 
     const { classes } = useStyles();
 
-    useEffect(() => {
-        if (changeUserPhotoItem) {
-            // uploadphotomodal
-        }
-    }, [changeUserPhotoItem]);
-
     return (
         <Box>
-            <UploadPhotoModal user={email} open={modalOpen} onClose={() => setModalOpen(false)} />
+            <Modal
+                title="New Photo"
+                opened={opened}
+                onClose={close}
+                size="md"
+                overlayColor={
+                    theme.colorScheme === 'dark'
+                        ? theme.colors.dark[9]
+                        : theme.colors.gray[2]
+                }
+                overlayOpacity={0.55}
+                overlayBlur={3}
+            >
+                <UploadPhotoModal user={profileInfo.email} closeModal={close} />
+            </Modal>
 
             <Group noWrap>
                 <Menu shadow="md" width={200}>
                     <Menu.Target>
-                        <Avatar src={avatar} size={128} radius="lg" />
+                        <Avatar
+                            src={profileInfo.img_url}
+                            size={128}
+                            radius="lg"
+                        />
                     </Menu.Target>
                     <Menu.Dropdown>
                         {/* <Menu.Label>Options</Menu.Label> */}
 
                         <Menu.Item
-                            onClick={() => {
-                                setChangeUserPhotoItem('upload');
-                                setModalOpen(true);
-                            }}
+                            onClick={open}
                             icon={<PhotoPlus size={14} />}
                         >
                             Upload New Photo
                         </Menu.Item>
                         <Menu.Item
                             onClick={() => {
-                                setChangeUserPhotoItem('gallery');
                             }}
                             disabled
                             icon={<Photo size={14} />}
@@ -137,7 +149,7 @@ const UserInfoIcons: React.FC<UserInfoIconsProps> = ({
                     </Text> */}
 
                     <Text size="xl" weight={500} className={classes.name}>
-                        {name}
+                        {`${profileInfo.first_name} ${profileInfo.last_name}`}
                     </Text>
 
                     <Group noWrap spacing={10} mt={3}>
@@ -146,7 +158,7 @@ const UserInfoIcons: React.FC<UserInfoIconsProps> = ({
                             strokeWidth={1.5}
                             className={classes.icon}
                         />
-                        <Text size="xs">{email}</Text>
+                        <Text size="xs">{profileInfo.email}</Text>
                     </Group>
 
                     <Group noWrap spacing={10} mt={5}>
@@ -156,7 +168,9 @@ const UserInfoIcons: React.FC<UserInfoIconsProps> = ({
                             className={classes.icon}
                         />
                         <Text size="xs">
-                            {phone ? phone : 'No phone number'}
+                            {profileInfo.phone
+                                ? profileInfo.phone
+                                : 'No phone number'}
                         </Text>
                     </Group>
                 </div>
@@ -167,49 +181,64 @@ const UserInfoIcons: React.FC<UserInfoIconsProps> = ({
 
 const Profile: React.FunctionComponent<profileProps> = ({ user }) => {
     // retrieve user img
-    const {
-        loading,
-        error,
-        sendRequest: sendUserImgRequest
-    } = useHttpRequest();
+    // const {
+    //     loading,
+    //     error,
+    //     sendRequest: sendUserImgRequest
+    // } = useHttpRequest();
 
-    const [userInfo, setUserInfo] = useState({
-        avatar: '',
-        name: '',
-        title: '',
-        email: '',
-        phone: '',
-        isVerified: ''
-    });
+    // const [userInfo, setUserInfo] = useState({
+    //     avatar: '',
+    //     name: '',
+    //     title: '',
+    //     email: '',
+    //     phone: '',
+    //     isVerified: ''
+    // });
 
-    let userInformation;
+    useEffect(() => {
+        dispatch(
+            fetchRequestProfileInfo({
+                url: `http://localhost:8000/users/get_user_credentials/?username=${user}`,
+                method: 'GET',
+                body: { user }
+            })
+        );
+
+        // sendUserImgRequest(
+        //     {
+        //         url: `http://localhost:8000/users/get_user_credentials/?username=${user}`
+        //     },
+        //     (data: any) => {
+        //         setUserInfo((prevState) => {
+        //             return {
+        //                 ...prevState,
+        //                 avatar: data.img_url
+        //                     ? detectLocalPath(data.img_url)
+        //                     : '',
+        //                 name: `${data.first_name} ${data.last_name}`,
+        //                 email: data.email,
+        //                 phone: data.phone,
+        //                 isVerified: data.is_verified
+        //             };
+        //         });
+        //     }
+        // );
+    }, []);
+
+    const profileInfo = useAppSelector((state) => state.profile.profileInfo);
+
+    const { loading } = useAppSelector((state) => state.profile);
 
     const { classes } = useStyles();
 
-    useEffect(() => {
-        sendUserImgRequest(
-            {
-                url: `http://localhost:8000/users/get_user_credentials/?username=${user}`
-            },
-            (data: any) => {
-                setUserInfo((prevState) => {
-                    return {
-                        ...prevState,
-                        avatar: data.img_url
-                            ? detectLocalPath(data.img_url)
-                            : '',
-                        name: `${data.first_name} ${data.last_name}`,
-                        email: data.email,
-                        phone: data.phone,
-                        isVerified: data.is_verified
-                    };
-                });
-            }
-        );
-    }, []);
+    const dispatch = useAppDispatch();
+
+    // console.log(profileInfo)
 
     return (
         <React.Fragment>
+            {loading && <CustomLoadOverlay />}
             <Box
                 sx={(theme) => ({
                     textalign: 'center',
@@ -223,7 +252,7 @@ const Profile: React.FunctionComponent<profileProps> = ({ user }) => {
 
                 {/* <Text>{user}</Text> */}
                 <Group mt={25} position="left">
-                    <UserInfoIcons {...userInfo} />
+                    <UserInfoIcons profileInfo={{ ...profileInfo }} />
                 </Group>
                 <Divider mt={25} />
 
@@ -233,7 +262,7 @@ const Profile: React.FunctionComponent<profileProps> = ({ user }) => {
                     </Text>
                 </Group>
 
-                <ProfileForm data={userInfo} />
+                {/* <ProfileForm data={profileInfo} /> */}
             </Box>
         </React.Fragment>
     );
