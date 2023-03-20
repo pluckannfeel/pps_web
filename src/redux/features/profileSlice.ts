@@ -108,7 +108,7 @@ const profileSlice = createSlice({
                     state.profileInfo = action.payload['data'];
                 }
 
-                console.log(action.payload['new_img_url']);
+                // console.log(action.payload['new_img_url']);
                 if ('new_img_url' in action.payload) {
                     // update the profileninfo state
 

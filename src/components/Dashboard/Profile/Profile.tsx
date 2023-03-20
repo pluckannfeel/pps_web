@@ -180,22 +180,6 @@ const UserInfoIcons: React.FC<userInfoProps> = ({ profileInfo }) => {
 };
 
 const Profile: React.FunctionComponent<profileProps> = ({ user }) => {
-    // retrieve user img
-    // const {
-    //     loading,
-    //     error,
-    //     sendRequest: sendUserImgRequest
-    // } = useHttpRequest();
-
-    // const [userInfo, setUserInfo] = useState({
-    //     avatar: '',
-    //     name: '',
-    //     title: '',
-    //     email: '',
-    //     phone: '',
-    //     isVerified: ''
-    // });
-
     useEffect(() => {
         dispatch(
             fetchRequestProfileInfo({
@@ -204,26 +188,6 @@ const Profile: React.FunctionComponent<profileProps> = ({ user }) => {
                 body: { user }
             })
         );
-
-        // sendUserImgRequest(
-        //     {
-        //         url: `http://localhost:8000/users/get_user_credentials/?username=${user}`
-        //     },
-        //     (data: any) => {
-        //         setUserInfo((prevState) => {
-        //             return {
-        //                 ...prevState,
-        //                 avatar: data.img_url
-        //                     ? detectLocalPath(data.img_url)
-        //                     : '',
-        //                 name: `${data.first_name} ${data.last_name}`,
-        //                 email: data.email,
-        //                 phone: data.phone,
-        //                 isVerified: data.is_verified
-        //             };
-        //         });
-        //     }
-        // );
     }, []);
 
     const profileInfo = useAppSelector((state) => state.profile.profileInfo);
